@@ -1,0 +1,9 @@
+package-as: PeggleForever
+
+ignore:
+  - README.md
+  - CURSE.md
+  - error.txt
+  - stylua.toml
+  - package.sh
+  - .gitignore

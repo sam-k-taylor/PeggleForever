@@ -1,6 +1,6 @@
 Changelog
 
-v1.02c-forever
+Peggle Forever v1.0.0 (based on Peggle 1.02)
 - Updated for WoW forever (1.60.1, Interface 16001).
 - Added Compat.lua, which maps removed APIs, templates and widget methods onto their modern replacements.
 - Registered the PEGGLE addon message prefix and strip same-realm suffixes from senders.

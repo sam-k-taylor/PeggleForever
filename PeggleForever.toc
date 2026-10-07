@@ -1,6 +1,6 @@
 ## Interface: 16001
-## Title: Peggle
-## Version: 1.02c
+## Title: Peggle Forever
+## Version: 1.0.0
 ## Notes: The popular game Peggle, now for World of Warcraft!
 ## Author: PopCap Games Inc.
 ## SavedVariables: PeggleData

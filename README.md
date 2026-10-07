@@ -11,6 +11,9 @@ PeggleForever.toc Addon manifest (Interface 16001 = WoW Forever 1.60.1)
 Compat.lua        Compatibility layer: maps removed APIs, templates and widget methods onto modern ones
 Peggle.lua        PopCap's original game code (minified with LuaSrcDiet, reformatted with StyLua)
 stylua.toml       StyLua settings used to format Peggle.lua
+package.sh        Builds the release zip into .release/
+.pkgmeta          CurseForge/BigWigs packager config
+CURSE.md          CurseForge project description
 images/           Textures (.tga): pegs, backgrounds, banners, UI art
 sounds/           Sound effects
 changelog.txt     Version history, including the forever patch notes
@@ -22,6 +25,19 @@ readme.txt        PopCap's original copyright notice and third-party licences
 Symlink (or copy) this folder into `World of Warcraft/_forever_/Interface/AddOns/PeggleForever`.
 
 The folder must be named `PeggleForever` to match `PeggleForever.toc`. Art and sound paths aren't hard-coded: `Compat.lua` builds them from the addon's folder name and passes them to `Peggle.lua` as `PEGGLE_ADDON_PATH`. The only fixed path is the `IconTexture` line in the .toc.
+
+## Releasing
+
+The version is set by `## Version:` in `PeggleForever.toc` (currently `1.0.0`). To build a release:
+
+```sh
+./package.sh          # uses the TOC version -> .release/PeggleForever-1.0.0.zip
+./package.sh 1.0.1    # or give a version; it's written into the packaged TOC
+```
+
+The zip contains only the addon (`PeggleForever.toc`, `Compat.lua`, `Peggle.lua`, `images/`, `sounds/`, `readme.txt` and `changelog.txt`) in a `PeggleForever/` folder, ready to upload to CurseForge. `readme.txt` is PopCap's copyright notice, so it always ships with the code. `.release/` is git-ignored.
+
+Peggle Forever has its own `major.minor.patch` version, starting at `1.0.0`. Leave PopCap's internal version in `Peggle.lua` (`e.versionString = "1.02a"`, `e.versionID`) alone: Peggle compares it with other players' and refuses duels, battles and Peggle Loot across different versions.
 
 ## Slash commands
 
