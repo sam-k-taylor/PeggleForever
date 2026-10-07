@@ -9,6 +9,9 @@ v1.02c-forever
 - Replaced the removed MouseIsOver and DrawRouteLine helpers (window fading, aim line).
 - Renamed the addon folder to PeggleForever; art and sound paths now come from the folder name instead of being hard-coded.
 - Fixed duel scores from players with a surname arriving as 0: UnitName now returns the full "Name Surname", matching the sender of addon messages.
+- The game window no longer opens on login by default. Turn on Auto-Open: On Log-in in the options to bring it back.
+- The minimap button now stays on the edge of the minimap at any minimap size or scale (including square minimaps), like a standard minimap button. Right-drag moves it around the edge; it can no longer be dragged loose onto the screen.
+- Brag messages now say [Peggle Forever] and point players to the Peggle Forever addon.
 
 v1.02
 - Added a new feature that will display a chat notification when the user recieves game data from another user with the original version of Peggle (1.0). This notification will let you know that they are using a very outdated version, and to let them know so they can update, otherwise they can't play with Peggle users with later versions.

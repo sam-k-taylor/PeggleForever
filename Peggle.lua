@@ -283,9 +283,9 @@ e.locale = {
 	["_PEGGLELOOT_WRONGMETHOD"] = "Peggle Loot requires the loot mode to be Master Looter.",
 	["PERSONAL_BEST"] = "PERSONAL BEST:",
 	["PERSONAL_BEST_PTS"] = "%s PTS",
-	["_PUBLISH_SCORE"] = "[Peggle]: %s just scored %s points on %s! Download the Peggle Addon for Wow to defeat their score!",
-	["_PUBLISH_DUEL_W"] = "[Peggle]: %s just defeated %s in a Peggle Duel! Download the Peggle Addon for Wow to pit your skills against them!",
-	["_PUBLISH_DUEL_L"] = "[Peggle]: %s was just defeated by %s in a Peggle Duel! Download the Peggle Addon for Wow to pit your skills against them!",
+	["_PUBLISH_SCORE"] = "[Peggle Forever]: %s just scored %s points on %s! Download the Peggle Forever addon for WoW to defeat their score!",
+	["_PUBLISH_DUEL_W"] = "[Peggle Forever]: %s just defeated %s in a Peggle Duel! Download the Peggle Forever addon for WoW to pit your skills against them!",
+	["_PUBLISH_DUEL_L"] = "[Peggle Forever]: %s was just defeated by %s in a Peggle Duel! Download the Peggle Forever addon for WoW to pit your skills against them!",
 	["_PUBLISH_1"] = CHAT_MSG_GUILD,
 	["_PUBLISH_2"] = CHAT_MSG_PARTY,
 	["_PUBLISH_3"] = CHAT_MSG_RAID,
@@ -727,7 +727,7 @@ PeggleData.settings = {
 	showMinimapIcon = true,
 	openFlightStart = true,
 	openDeath = true,
-	openLogIn = true,
+	openLogIn = false,
 	openDuel = true,
 	closeFlightEnd = false,
 	closeReadyCheck = true,
@@ -9164,7 +9164,7 @@ local function w(n, l, ...)
 			showMinimapIcon = true,
 			openFlightStart = true,
 			openDeath = true,
-			openLogIn = true,
+			openLogIn = false,
 			openDuel = true,
 			closeFlightEnd = false,
 			closeReadyCheck = true,
@@ -9241,17 +9241,12 @@ local function w(n, l, ...)
 	if PeggleData.settings.showMinimapIcon ~= true then
 		t.minimap:Hide()
 	end
-	if PeggleData.settings.minimapDetached == nil then
-		t.minimap:SetPoint(
-			"Center",
-			Minimap,
-			"Center",
-			-(76 * k(T(PeggleData.settings.minimapAngle or 270))),
-			(76 * I(T(PeggleData.settings.minimapAngle or 270)))
-		)
-	else
-		t.minimap:SetPoint("Center", UIParent, "bottomleft", PeggleData.settings.minimapX, PeggleData.settings.minimapY)
-	end
+	-- The button always sits on the minimap's edge now; drop any position
+	-- saved by the old free-floating drag.
+	PeggleData.settings.minimapDetached = nil
+	PeggleData.settings.minimapX = nil
+	PeggleData.settings.minimapY = nil
+	t.minimap:UpdatePosition()
 	R(false)
 	if PeggleData.settings.openLogIn ~= true then
 		n:Hide()
@@ -10407,7 +10402,25 @@ local function y()
 	n.highlight:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 	n.highlight:SetBlendMode("ADD")
 	n.highlight:Hide()
-	n:SetPoint("Center", -(76 * k(T(0))), (76 * I(T(0))))
+	-- Keep the button on the edge of the minimap at the saved angle, whatever
+	-- size the minimap is. The old fixed radius of 76 suited a 140px minimap.
+	n.UpdatePosition = function(e)
+		local angle = T(PeggleData.settings.minimapAngle or 270)
+		local x, y = -k(angle), I(angle)
+		if GetMinimapShape and GetMinimapShape() == "SQUARE" then
+			-- Push the point out to the square's edge, as LibDBIcon does.
+			x = math.max(-1, math.min(1, x * 1.4142))
+			y = math.max(-1, math.min(1, y * 1.4142))
+		end
+		e:ClearAllPoints()
+		e:SetPoint("Center", Minimap, "Center", x * (Minimap:GetWidth() / 2 + 6), y * (Minimap:GetHeight() / 2 + 6))
+	end
+	n:SetFrameStrata("MEDIUM")
+	n:SetFrameLevel(8)
+	n:UpdatePosition()
+	Minimap:HookScript("OnSizeChanged", function()
+		n:UpdatePosition()
+	end)
 	n:Show()
 	n.elapsed = 0
 	n:SetScript("OnMouseDown", function(e, t)
@@ -10460,28 +10473,13 @@ local function y()
 	end)
 	n:SetScript("OnUpdate", function(e, r)
 		if e.moving then
-			local t, t = GetCursorPosition()
-			local t = Minimap:GetLeft() + Minimap:GetWidth() / 2
-			local t = Minimap:GetBottom() + Minimap:GetHeight() / 2
-			PeggleData.settings.minimapAngle = angle
-			local o, l = GetCursorPosition()
-			local i = Minimap:GetLeft() + Minimap:GetWidth() / 2
-			local a = Minimap:GetBottom() + Minimap:GetHeight() / 2
-			local n = (o / UIParent:GetScale()) - i
-			local t = (l / UIParent:GetScale()) - a
-			if (n ^ 2 + t ^ 2) > Minimap:GetWidth() ^ 2 then
-				PeggleData.settings.minimapDetached = true
-				n = o / UIParent:GetScale()
-				t = l / UIParent:GetScale()
-				PeggleData.settings.minimapX = n
-				PeggleData.settings.minimapY = t
-				e:SetPoint("Center", UIParent, "bottomleft", n, t)
-			else
-				local t = gt(math.atan2((l / UIParent:GetScale()) - a, i - (o / UIParent:GetScale())))
-				PeggleData.settings.minimapAngle = t
-				PeggleData.settings.minimapDetached = nil
-				e:SetPoint("Center", Minimap, "Center", -(76 * k(T(t))), (76 * I(T(t))))
-			end
+			-- Follow the cursor around the minimap's edge. Work in the
+			-- minimap's own scale, which can differ from UIParent's.
+			local cx, cy = Minimap:GetCenter()
+			local scale = Minimap:GetEffectiveScale()
+			local x, y = GetCursorPosition()
+			PeggleData.settings.minimapAngle = gt(math.atan2(y / scale - cy, cx - x / scale))
+			e:UpdatePosition()
 		end
 		if e.notice then
 			e.elapsed = e.elapsed + r
