@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="blue" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#9cd0ff"/>
+      <stop offset="0.45" stop-color="#2f80f0"/>
+      <stop offset="1" stop-color="#123c8c"/>
+    </radialGradient>
+    <radialGradient id="orange" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#ffd9a0"/>
+      <stop offset="0.45" stop-color="#ff7a1a"/>
+      <stop offset="1" stop-color="#a8380a"/>
+    </radialGradient>
+    <radialGradient id="green" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#c8ffb0"/>
+      <stop offset="0.45" stop-color="#3fc83a"/>
+      <stop offset="1" stop-color="#156a14"/>
+    </radialGradient>
+    <radialGradient id="purple" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#f0c8ff"/>
+      <stop offset="0.45" stop-color="#b04ae0"/>
+      <stop offset="1" stop-color="#561a80"/>
+    </radialGradient>
+    <radialGradient id="ball" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#c8ccd4"/>
+      <stop offset="1" stop-color="#5a5f6a"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffe38a" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#ffb000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="board" cx="0.5" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#2c2114"/>
+      <stop offset="1" stop-color="#1e160d"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background tile with gold frame (matches the other addons) -->
+  <rect x="8" y="8" width="496" height="496" rx="72" fill="url(#board)" stroke="#b8862b" stroke-width="12"/>
+  <rect x="28" y="28" width="456" height="456" rx="56" fill="none" stroke="#5a4020" stroke-width="4"/>
+
+  <!-- Launcher at the top, aimed down and to the right -->
+  <line x1="256" y1="70" x2="306" y2="110" stroke="#3a2200" stroke-width="34" stroke-linecap="round"/>
+  <line x1="256" y1="70" x2="306" y2="110" stroke="#b8862b" stroke-width="18" stroke-linecap="round"/>
+  <g stroke="#3a2200" stroke-width="8" stroke-linejoin="round">
+    <path d="M 200 50 A 56 56 0 0 0 312 50 Z" fill="#ffc21a"/>
+    <circle cx="256" cy="70" r="15" fill="#e8a800"/>
+  </g>
+
+  <!-- Dotted shot path, curving down under gravity -->
+  <path d="M 322 124 Q 392 164 372 262" fill="none" stroke="#f0dfb4" stroke-width="7"
+        stroke-linecap="round" stroke-dasharray="0 20"/>
+
+  <!-- Peg field: a curved band of blue pegs with orange targets -->
+  <g stroke="#0c1424" stroke-width="4">
+    <circle cx="92" cy="226" r="21" fill="url(#blue)"/>
+    <circle cx="140" cy="262" r="21" fill="url(#orange)"/>
+    <circle cx="192" cy="288" r="21" fill="url(#blue)"/>
+    <circle cx="246" cy="300" r="21" fill="url(#green)"/>
+    <circle cx="300" cy="296" r="21" fill="url(#blue)"/>
+    <circle cx="420" cy="226" r="21" fill="url(#blue)"/>
+
+    <circle cx="112" cy="330" r="21" fill="url(#blue)"/>
+    <circle cx="168" cy="358" r="21" fill="url(#purple)"/>
+    <circle cx="226" cy="370" r="21" fill="url(#orange)"/>
+    <circle cx="286" cy="370" r="21" fill="url(#blue)"/>
+    <circle cx="344" cy="358" r="21" fill="url(#orange)"/>
+    <circle cx="400" cy="330" r="21" fill="url(#blue)"/>
+  </g>
+
+  <!-- The orange peg the ball is hitting, lit up -->
+  <circle cx="368" cy="292" r="48" fill="url(#glow)"/>
+  <circle cx="366" cy="296" r="21" fill="url(#orange)" stroke="#fff3c0" stroke-width="5"/>
+
+  <!-- The ball -->
+  <circle cx="370" cy="256" r="18" fill="url(#ball)" stroke="#2a2d33" stroke-width="4"/>
+
+  <!-- Bucket at the bottom, marked with an infinity sign for "Forever" -->
+  <g stroke="#3a2200" stroke-width="8" stroke-linejoin="round">
+    <path d="M 176 420 L 336 420 L 316 470 L 196 470 Z" fill="#ffc21a"/>
+    <rect x="166" y="408" width="180" height="18" rx="9" fill="#b8862b"/>
+  </g>
+  <path d="M 256 446 C 238 428, 214 428, 214 446 C 214 464, 238 464, 256 446 C 274 428, 298 428, 298 446 C 298 464, 274 464, 256 446 Z"
+        fill="none" stroke="#3a2200" stroke-width="7" stroke-linejoin="round"/>
+</svg>

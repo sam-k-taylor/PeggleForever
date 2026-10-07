@@ -6,4 +6,6 @@ ignore:
   - error.txt
   - stylua.toml
   - package.sh
+  - logo.svg
+  - logo.png
   - .gitignore

@@ -1,5 +1,7 @@
 # Peggle Forever
 
+<p align="center"><img src="logo.png" alt="Peggle Forever logo" width="160"></p>
+
 PopCap's 2009 World of Warcraft Peggle addon (v1.02), patched to run on WoW Forever (1.60.1, Interface 16001).
 
 The game code is PopCap's original. Almost everything the modern client removed or changed is handled by a compatibility layer, `Compat.lua`. The only edits to `Peggle.lua` are the `setfenv` on its first line, reading its addon path from `PEGGLE_ADDON_PATH`, and passing the now-required flags argument (`""`) to `SetFont`.
@@ -14,6 +16,7 @@ stylua.toml       StyLua settings used to format Peggle.lua
 package.sh        Builds the release zip into .release/
 .pkgmeta          CurseForge/BigWigs packager config
 CURSE.md          CurseForge project description
+logo.svg/.png     Project logo (400x400 PNG for CurseForge, rendered from the SVG)
 images/           Textures (.tga): pegs, backgrounds, banners, UI art
 sounds/           Sound effects
 changelog.txt     Version history, including the forever patch notes
