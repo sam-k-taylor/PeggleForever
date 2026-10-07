@@ -1,0 +1,389 @@
+Message: Interface/AddOns/Peggle/Peggle.lua:2449: attempt to call a nil value
+Time: Wed Oct  7 16:36:29 2026
+Count: 100
+Stack:
+[Interface/AddOns/Peggle/Peggle.lua]:2449: in function <Interface/AddOns/Peggle/Peggle.lua:2442>
+
+Locals:
+e=PeggleMouseOverSentry <Compat.lua:253>{
+ mouseOver=true
+ elapsed=0
+}
+n=3.637000
+(*temporary)=nil
+(*temporary)=PeggleWindow <Compat.lua:253>{
+ peggleMinH=274
+ rightBorder2=Texture <Compat.lua:48>
+ logo=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ sparks=PeggleSparks3 <Compat.lua:119>
+ feverPegScore=FontString <Peggle.lua:726>
+ peggleMaxW=993
+ bottomBorder=Texture <Compat.lua:48>
+ bonusBar5=Texture <Compat.lua:48>
+ gameMenu=Frame <Compat.lua:253>
+ peggleMaxH=822
+ duelTab=Frame <Compat.lua:253>
+ coverUp=Texture <Compat.lua:48>
+ about=Frame <Compat.lua:253>
+ roundBalls=Frame <Compat.lua:253>
+ sparkCount=3
+ showHideButton=PeggleShowHideButton <Compat.lua:253>
+ bonusBar4=Texture <Compat.lua:48>
+ levelList=Frame <Compat.lua:253>
+ TopEdge=Texture <Compat.lua:48>
+ feverTracker=Frame <Compat.lua:253>
+ BottomRightCorner=Texture <Compat.lua:48>
+ LeftEdge=Texture <Compat.lua:48>
+ rightBorder3=Texture <Compat.lua:48>
+ achieve=exhibitA <Compat.lua:171>
+ legal=Frame <Compat.lua:253>
+ charScreen=Frame <Compat.lua:253>
+ fever1=Texture <Compat.lua:48>
+ peggleLootDialog=Frame <Compat.lua:253>
+ banner=Frame <Compat.lua:253>
+ powerLabel=Frame <Compat.lua:253>
+ summaryScreen=Frame <Compat.lua:253>
+ rightBorder1=Texture <Compat.lua:48>
+ gameBoardContainer=ScrollFrame <Compat.lua:253>
+ menuButton=PeggleButton_menuButton <Compat.lua:253>
+ peggleLootTimer=PeggleLootTimer <Compat.lua:253>
+ TopLeftCorner=Texture <Compat.lua:48>
+ network=PeggleNet <Compat.lua:253>
+ credits=Frame <Compat.lua:253>
+ splash=Frame <Compat.lua:253>
+ challengeTabSparks=PeggleSparks2 <Compat.lua:119>
+ challengeTimer=Frame <Compat.lua:253>
+ duelTimer=Frame <Compat.lua:253>
+ bonusBar2=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ charPortrait=Frame <Compat.lua:253>
+ catagoryScreen=Frame <Compat.lua:253>
+ bonusBar3=Texture <Compat.lua:48>
+ fontObj=PeggleDropdownFont <UnknownFile:0>
+ bonusBar1=Texture <Compat.lua:48>
+ catcher=Texture <Compat.lua:48>
+ catcherBack=Texture <Compat.lua:48>
+ catcherGlow=Texture <Compat.lua:48>
+ ballTracker=Frame <Compat.lua:253>
+ roundPegs=FontString <Peggle.lua:726>
+ BottomLeftCorner=Texture <Compat.lua:48>
+ minimap=PeggledMinimapIcon <Compat.lua:253>
+ mouseBounds=Frame <Compat.lua:253>
+ bestScoreCaption=FontString <Peggle.lua:726>
+ Center=Texture <Compat.lua:48>
+ roundBonusScore=FontString <Peggle.lua:726>
+ leftBorder=Texture <Compat.lua:48>
+ fever3=Texture <Compat.lua:48>
+ fever2=Texture <Compat.lua:48>
+ soundButton=PeggleButton_soundButton <Compat.lua:253>
+ topBorder=Texture <Compat.lua:48>
+ logoFrame=Frame <Compat.lua:253>
+ rainbow=Texture <Compat.lua:48>
+ shooter=Texture <Compat.lua:48>
+ topCover=Texture <Compat.lua:48>
+ mouseOverScreen=PeggleMouseOverSentry <Compat.lua:253>
+ bestScore=FontString <Peggle.lua:726>
+ roundPegScore=FontString <Peggle.lua:726>
+ backdropInfo=<table>
+ TopRightCorner=Texture <Compat.lua:48>
+ artBorder=Frame <Compat.lua:253>
+ peggleMinW=331
+}
+(*temporary)="attempt to call a nil value"
+t=PeggleWindow <Compat.lua:253>{
+ peggleMinH=274
+ rightBorder2=Texture <Compat.lua:48>
+ logo=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ sparks=PeggleSparks3 <Compat.lua:119>
+ feverPegScore=FontString <Peggle.lua:726>
+ peggleMaxW=993
+ bottomBorder=Texture <Compat.lua:48>
+ bonusBar5=Texture <Compat.lua:48>
+ gameMenu=Frame <Compat.lua:253>
+ peggleMaxH=822
+ duelTab=Frame <Compat.lua:253>
+ coverUp=Texture <Compat.lua:48>
+ about=Frame <Compat.lua:253>
+ roundBalls=Frame <Compat.lua:253>
+ sparkCount=3
+ showHideButton=PeggleShowHideButton <Compat.lua:253>
+ bonusBar4=Texture <Compat.lua:48>
+ levelList=Frame <Compat.lua:253>
+ TopEdge=Texture <Compat.lua:48>
+ feverTracker=Frame <Compat.lua:253>
+ BottomRightCorner=Texture <Compat.lua:48>
+ LeftEdge=Texture <Compat.lua:48>
+ rightBorder3=Texture <Compat.lua:48>
+ achieve=exhibitA <Compat.lua:171>
+ legal=Frame <Compat.lua:253>
+ charScreen=Frame <Compat.lua:253>
+ fever1=Texture <Compat.lua:48>
+ peggleLootDialog=Frame <Compat.lua:253>
+ banner=Frame <Compat.lua:253>
+ powerLabel=Frame <Compat.lua:253>
+ summaryScreen=Frame <Compat.lua:253>
+ rightBorder1=Texture <
+
+Message: Interface/AddOns/Peggle/Peggle.lua:1847: attempt to call a nil value
+Time: Wed Oct  7 16:36:43 2026
+Count: 1
+Stack:
+[Interface/AddOns/Peggle/Peggle.lua]:1847: in function <Interface/AddOns/Peggle/Peggle.lua:1847>
+
+Locals:
+e=PeggleButton_charOkay <Compat.lua:253>{
+ highlight=Texture <Compat.lua:48>
+ hover=true
+ background=Texture <Compat.lua:48>
+}
+(*temporary)=nil
+(*temporary)=Frame <Compat.lua:253>{
+ focus=Frame <Compat.lua:253>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ TopEdge=Texture <Compat.lua:48>
+ BottomRightCorner=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+ TopRightCorner=Texture <Compat.lua:48>
+ TopLeftCorner=Texture <Compat.lua:48>
+ backdropInfo=<table>
+ LeftEdge=Texture <Compat.lua:48>
+}
+(*temporary)="attempt to call a nil value"
+n=PeggleButton_charOkay <Compat.lua:253>{
+ highlight=Texture <Compat.lua:48>
+ hover=true
+ background=Texture <Compat.lua:48>
+}
+
+
+Message: Interface/AddOns/Peggle/Peggle.lua:1841: attempt to call a nil value
+Time: Wed Oct  7 16:36:44 2026
+Count: 1
+Stack:
+[Interface/AddOns/Peggle/Peggle.lua]:1841: in function <Interface/AddOns/Peggle/Peggle.lua:1841>
+
+Locals:
+e=Frame <Compat.lua:253>{
+ BottomRightCorner=Texture <Compat.lua:48>
+ tex=Texture <Compat.lua:48>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ TopEdge=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+ TopRightCorner=Texture <Compat.lua:48>
+ TopLeftCorner=Texture <Compat.lua:48>
+ backdropInfo=<table>
+ LeftEdge=Texture <Compat.lua:48>
+}
+(*temporary)=nil
+(*temporary)=Frame <Compat.lua:253>{
+ focus=Frame <Compat.lua:253>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ TopEdge=Texture <Compat.lua:48>
+ BottomRightCorner=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+ TopRightCorner=Texture <Compat.lua:48>
+ TopLeftCorner=Texture <Compat.lua:48>
+ backdropInfo=<table>
+ LeftEdge=Texture <Compat.lua:48>
+}
+(*temporary)="attempt to call a nil value"
+
+
+Message: Interface/AddOns/Peggle/Peggle.lua:1847: attempt to call a nil value
+Time: Wed Oct  7 16:36:44 2026
+Count: 1
+Stack:
+[Interface/AddOns/Peggle/Peggle.lua]:1847: in function <Interface/AddOns/Peggle/Peggle.lua:1847>
+[C]: in function 'Hide'
+[Interface/AddOns/Peggle/Peggle.lua]:1847: in function <Interface/AddOns/Peggle/Peggle.lua:1844>
+
+Locals:
+e=PeggleButton_charOkay <Compat.lua:253>{
+ highlight=Texture <Compat.lua:48>
+ hover=true
+ background=Texture <Compat.lua:48>
+}
+(*temporary)=nil
+(*temporary)=Frame <Compat.lua:253>{
+ focus=Frame <Compat.lua:253>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ TopEdge=Texture <Compat.lua:48>
+ BottomRightCorner=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+ TopRightCorner=Texture <Compat.lua:48>
+ TopLeftCorner=Texture <Compat.lua:48>
+ backdropInfo=<table>
+ LeftEdge=Texture <Compat.lua:48>
+}
+(*temporary)="attempt to call a nil value"
+n=PeggleButton_charOkay <Compat.lua:253>{
+ highlight=Texture <Compat.lua:48>
+ hover=true
+ background=Texture <Compat.lua:48>
+}
+
+Message: Interface/AddOns/Peggle/Peggle.lua:957: attempt to call a nil value
+Time: Wed Oct  7 16:36:55 2026
+Count: 1756
+Stack:
+[Interface/AddOns/Peggle/Peggle.lua]:957: in function <Interface/AddOns/Peggle/Peggle.lua:949>
+[Interface/AddOns/Peggle/Peggle.lua]:1231: in function <Interface/AddOns/Peggle/Peggle.lua:1077>
+
+Locals:
+l=278
+o=428
+n=280.242304
+a=426.683917
+t=polyLine1 <Compat.lua:48>
+(*temporary)=nil
+(*temporary)=polyLine1 <Compat.lua:48>
+(*temporary)=Frame <Compat.lua:253>{
+ TopLeftCorner=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ lastX=424.833204
+ backdropInfo=<table>
+ TopRightCorner=Texture <Compat.lua:48>
+ trail=<table>
+ background=Texture <Compat.lua:48>
+ foreground=Frame <Compat.lua:253>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ lastY=287.333217
+ TopEdge=Texture <Compat.lua:48>
+ BottomRightCorner=Texture <Compat.lua:48>
+ LeftEdge=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+}
+(*temporary)=278
+(*temporary)=428
+(*temporary)=280.242304
+(*temporary)=426.683917
+(*temporary)=32
+(*temporary)="attempt to call a nil value"
+ce=1
+Ke=1
+r=Frame <Compat.lua:253>{
+ TopLeftCorner=Texture <Compat.lua:48>
+ RightEdge=Texture <Compat.lua:48>
+ lastX=424.833204
+ backdropInfo=<table>
+ TopRightCorner=Texture <Compat.lua:48>
+ trail=<table>
+ background=Texture <Compat.lua:48>
+ foreground=Frame <Compat.lua:253>
+ Center=Texture <Compat.lua:48>
+ BottomEdge=Texture <Compat.lua:48>
+ lastY=287.333217
+ TopEdge=Texture <Compat.lua:48>
+ BottomRightCorner=Texture <Compat.lua:48>
+ LeftEdge=Texture <Compat.lua:48>
+ BottomLeftCorner=Texture <Compat.lua:48>
+}
+e=<table>{
+ SOUND_EXTRABALL1=8
+ currentView=<table>
+ SOUND_SHOT=5
+ curvedBrick=<table>
+ pegRadius=8.500000
+ SOUND_EXTRABALL3=10
+ ballRadius=6
+ catcherLoopTime=6
+ ping=3
+ onlineList=<table>
+ brickWidth=28.900000
+ brickHeight=28.900000
+ catcherWidth=138
+ SOUND_POWERUP_BLAST=23
+ boardBoundryBottom=10
+ catcherHeight=27
+ SOUND_COIN_SPIN=6
+ oldUsers=<table>
+ SOUND_APPLAUSE=1
+ SOUND_COIN_DENIED=7
+ sectionYSize=47
+ SOUND_SCORECOUNTER=25
+ boardHeight=464
+ polyTable=<table>
+ SOUND_ODETOJOY=17
+ boardWidth=554
+ windowWidth=662
+ ballHeight=12
+ SOUND_FIREWORKS_START=14
+ outdatedPop=Frame <Compat.lua:253>
+ catcherPolygon=<table>
+ temp=<table>
+ SOUND_FIREWORK_POP=13
+ outdatedText=FontString <Peggle.lua:726>
+ windowHeight=548
+ stats=<table>
+ name="Greeb"
+ ANI_CIRCLE_ROT=5
+ ANI_LINE_ROTATOR=4
+ boardXYSections=10
+ SOUND_BALL_ADD=3
+ ANI_ROTATOR=3
+ ANI_CIRCLE=2
+ ANI_LINE=1
+ polygonCorners=<table>
+ commands=<table>
+ days=<table>
+ newInfo=<table>
+ versionID=1.021000
+ offlineList=<table>
+ SOUND_BUMPER=28
+ channels=<table>
+ filterText="No player named '(.+)' is currently playing."
+ SOUND_SIGH=26
+ dropInfo=<table>
+ boardBoundryLeft=10
+ ranks=<table>
+ versionString="1.02a"
+ talentTex=<table>
+ zoomDistance=48
+ polygon=<table>
+ SOUND_POWERUP_GUIDE=22
+ SOUND_FEVER_HIT=12
+ SOUND_POWERUP=21
+ artPath="Interface\AddOns\Peggle\images\"
+ SOUND_EXTRABALL2=9
+ sectionXSize=56
+ boardBoundryTop=462
+ SOUND_PEG_POP=19
+ cCount=0
+ SOUND_PEG_SPARK=20
+ brickTex=<table>
+ locale=<table>
+ boardBoundryRight=552
+ SOUND_PEG_HIT=18
+ SOUND_GONG=16
+ SOUND_GAP_BONUS=15
+ factors=<table>
+ SOUND_FEVER=11
+ sounds=<table>
+ SOUND_RAINBOW=24
+ seconds=60
+ sentList=<table>
+ brickRadius=15.300000
+ SOUND_BUCKET_HIT=4
+ SOUND_BUCKET_BALL=29
+ ANI_NONE=0
+ addonPath="Interface\AddOns\Peggle"
+ SOUND_AWARD=2
+ starColors=<table>
+ soundPath="Interface\AddOns\Peggle\sounds\"
+ SOUND_TIMPANI=27
+ pegHeight=23.800000
+ ballWidth=12
+ pegWidth=23.800000
+ addonName="PEGGLE"
+}

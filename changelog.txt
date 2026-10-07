@@ -1,5 +1,13 @@
 Changelog
 
+v1.02c-forever
+- Updated for WoW forever (1.60.1, Interface 16001).
+- Added Compat.lua, which maps removed APIs, templates and widget methods onto their modern replacements.
+- Registered the PEGGLE addon message prefix and strip same-realm suffixes from senders.
+- Replaced the dropdown skin hook so it no longer errors on other addons' dropdowns.
+- Pass the now-required flags argument to SetFont, and default nil EditBox limits (SetMaxLetters/SetMaxBytes/SetNumeric).
+- Replaced the removed MouseIsOver and DrawRouteLine helpers (window fading, aim line).
+
 v1.02
 - Added a new feature that will display a chat notification when the user recieves game data from another user with the original version of Peggle (1.0). This notification will let you know that they are using a very outdated version, and to let them know so they can update, otherwise they can't play with Peggle users with later versions.
 - Added a new option to the options screen, called "Hide Outdated Chat Notifications" which will hide the Peggle 1.0 user notifications.
