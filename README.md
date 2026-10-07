@@ -9,7 +9,8 @@ The game code is PopCap's original. Almost everything the modern client removed 
 ```
 PeggleForever.toc Addon manifest (Interface 16001 = WoW Forever 1.60.1)
 Compat.lua        Compatibility layer: maps removed APIs, templates and widget methods onto modern ones
-Peggle.lua        PopCap's original game code (minified with LuaSrcDiet)
+Peggle.lua        PopCap's original game code (minified with LuaSrcDiet, reformatted with StyLua)
+stylua.toml       StyLua settings used to format Peggle.lua
 images/           Textures (.tga): pegs, backgrounds, banners, UI art
 sounds/           Sound effects
 changelog.txt     Version history, including the forever patch notes
@@ -28,7 +29,7 @@ The folder must be named `PeggleForever` to match `PeggleForever.toc`. Art and s
 
 ## How the compatibility layer works
 
-`Peggle.lua` is minified and its main chunk already uses all 200 local slots, so replacements can't be added to it as locals. Instead, `Peggle.lua` runs inside a private environment (a `setfenv` on its first line). `Compat.lua` fills that environment table (`ns.env`); lookups hit it first and fall through to `_G`, and global writes go straight to `_G`.
+`Peggle.lua` was minified, so its locals have one- or two-letter names, and its main chunk already uses all 200 local slots, so replacements can't be added to it as locals. Instead, `Peggle.lua` runs inside a private environment (a `setfenv` on its first line). `Compat.lua` fills that environment table (`ns.env`); lookups hit it first and fall through to `_G`, and global writes go straight to `_G`.
 
 What `Compat.lua` covers:
 
@@ -45,9 +46,11 @@ What `Compat.lua` covers:
 
 ## Debugging
 
-Errors in `Peggle.lua` report minified line numbers, so check the locals in the error dump (BugSack or `/console scriptErrors 1`) to work out which frame or function is involved. Frames created through `Compat.lua` show `<Compat.lua:...>` as their origin.
+`Peggle.lua` has been reformatted to one statement per line, so error line numbers point at a single statement. The names are still minified, so check the locals in the error dump (BugSack or `/console scriptErrors 1`) to work out which frame or function is involved. Frames created through `Compat.lua` show `<Compat.lua:...>` as their origin.
 
-When something is missing, fix it in `Compat.lua` rather than editing `Peggle.lua`. That keeps the diff against the original 2009 code (`git diff ecaec3b -- Peggle.lua`) small.
+When something is missing, fix it in `Compat.lua` rather than editing `Peggle.lua`.
+
+The reformat changed layout only. Compiled with Lua 5.1's `luac -l -l -s`, it gives the same instructions, constants, locals and upvalues as the original once line numbers are ignored. Two strings that held raw `0xA9` bytes were rewritten as `\169` escapes, so the file is plain ASCII and editors can't re-encode it. To see what's changed since the 2009 version, ignoring formatting, diff against the reformat commit rather than `ecaec3b`. Keep `Peggle.lua` formatted with `stylua Peggle.lua`.
 
 ## Credits and licence
 
