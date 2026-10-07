@@ -5,7 +5,7 @@
 ## Author: PopCap Games Inc.
 ## SavedVariables: PeggleData
 ## SavedVariablesPerCharacter: PeggleProfile
-## IconTexture: Interface\AddOns\Peggle\images\windowIcon
+## IconTexture: Interface\AddOns\PeggleForever\images\windowIcon
 
 Compat.lua
 Peggle.lua

@@ -7,6 +7,7 @@ v1.02c-forever
 - Replaced the dropdown skin hook so it no longer errors on other addons' dropdowns.
 - Pass the now-required flags argument to SetFont, and default nil EditBox limits (SetMaxLetters/SetMaxBytes/SetNumeric).
 - Replaced the removed MouseIsOver and DrawRouteLine helpers (window fading, aim line).
+- Renamed the addon folder to PeggleForever; art and sound paths now come from the folder name instead of being hard-coded.
 
 v1.02
 - Added a new feature that will display a chat notification when the user recieves game data from another user with the original version of Peggle (1.0). This notification will let you know that they are using a very outdated version, and to let them know so they can update, otherwise they can't play with Peggle users with later versions.

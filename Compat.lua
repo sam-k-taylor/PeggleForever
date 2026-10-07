@@ -5,7 +5,7 @@
 -- inside a private environment (setfenv on its first line): lookups hit this
 -- table first and fall through to _G, and global writes go straight to _G.
 
-local _, ns = ...
+local addonName, ns = ...
 
 -- Filled in below; the metatable is attached at the end of this file so the
 -- definitions land in env rather than falling through to _G.
@@ -19,7 +19,11 @@ local GetGuildRosterInfo = GetGuildRosterInfo
 local GetNumGuildMembers = GetNumGuildMembers
 
 local ADDON_PREFIX = "PEGGLE"
-local ART_PATH = "Interface\\AddOns\\Peggle\\images\\"
+-- Peggle.lua builds its art and sound paths from this, so the addon loads from
+-- whatever folder it's installed in.
+local ADDON_PATH = "Interface\\AddOns\\" .. addonName
+env.PEGGLE_ADDON_PATH = ADDON_PATH
+local ART_PATH = ADDON_PATH .. "\\images\\"
 
 C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
 
