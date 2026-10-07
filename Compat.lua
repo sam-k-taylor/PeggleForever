@@ -322,6 +322,22 @@ function env.RaidNotice_AddMessage(_noticeFrame, text, colorInfo, displayTime)
 	RaidWarningUtil.AddMessage(text, colorInfo, displayTime)
 end
 
+-- Characters have surnames: UnitName returns (name, surname), but addon
+-- messages arrive from the full "Name Surname". Peggle keys its message
+-- checksums on the player's name, so with the bare first name every duel
+-- score from a surnamed player failed the check and came through as 0.
+local UnitName = UnitName
+local nameConsts = Constants and Constants.CharacterNameSeparatorConsts
+local SURNAME_SEPARATOR = (nameConsts and nameConsts.CHARACTERNAME_SURNAME_SEPARATOR) or " "
+
+function env.UnitName(unit)
+	local name, surname = UnitName(unit)
+	if name and surname and surname ~= "" then
+		return name .. SURNAME_SEPARATOR .. surname
+	end
+	return name
+end
+
 -- Group roster
 function env.GetNumRaidMembers()
 	return IsInRaid() and GetNumGroupMembers() or 0
