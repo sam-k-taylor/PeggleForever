@@ -2562,10 +2562,12 @@ function o:SkinDropdown(t, t, t, t, t, t, t)
 		end
 	end
 end
-local function l(n, l)
+-- Modern UIDropDownMenu hides the list (clearing UIDROPDOWNMENU_OPEN_MENU)
+-- before calling func, so the owning dropdown is passed in via arg2.
+local function l(n, l, a)
 	local o
 	if l == 1 then
-		local e = UIDROPDOWNMENU_OPEN_MENU
+		local e = a or UIDROPDOWNMENU_OPEN_MENU
 		UIDropDownMenu_SetText(e, n:GetText(), e)
 		UIDropDownMenu_SetSelectedValue(e, n.value)
 		PeggleData.settings.defaultPublish = n.value
@@ -2574,7 +2576,7 @@ local function l(n, l)
 		e.name2:SetText(PeggleProfile.lastDuels[n.value])
 	else
 		if not n.forced then
-			local t = UIDROPDOWNMENU_OPEN_MENU
+			local t = a or UIDROPDOWNMENU_OPEN_MENU
 			UIDropDownMenu_SetText(t, n:GetText(), t)
 			UIDropDownMenu_SetSelectedName(t, n:GetText())
 			t.selectedValue = n.value
@@ -2597,6 +2599,7 @@ local function l(n, l)
 	end
 end
 local function We(o)
+	local dropdown = o
 	if UIDROPDOWNMENU_MENU_LEVEL == 1 then
 		local a
 		local n
@@ -2635,6 +2638,7 @@ local function We(o)
 					t = n.value
 				end
 				n.arg1 = 1
+				n.arg2 = dropdown
 				n.func = l
 				UIDropDownMenu_AddButton(n)
 			end
@@ -2649,6 +2653,7 @@ local function We(o)
 				end
 				n.value = n.text
 				n.arg1 = 1
+				n.arg2 = dropdown
 				n.func = l
 				UIDropDownMenu_AddButton(n)
 			end
@@ -2679,6 +2684,7 @@ local function We(o)
 					n.tCoordBottom = 0.5
 				end
 				n.checked = nil
+				n.arg2 = dropdown
 				n.func = l
 				UIDropDownMenu_AddButton(n)
 			end
