@@ -16,7 +16,7 @@ rm -rf "$STAGE" "$ZIP"
 mkdir -p "$STAGE"
 
 cp Compat.lua Peggle.lua "$STAGE/"
-cp -r images sounds "$STAGE/"
+cp -r images sounds Libs "$STAGE/"
 # readme.txt is PopCap's copyright notice and third-party licences; keep it with the code.
 cp readme.txt changelog.txt "$STAGE/"
 sed -e "s/^## Version:.*/## Version: $VERSION/" -e "s/@project-version@/$VERSION/g" "$ADDON.toc" > "$STAGE/$ADDON.toc"

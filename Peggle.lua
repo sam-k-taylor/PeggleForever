@@ -247,6 +247,12 @@ e.locale = {
 	["OPT_LOCK"] = "Lock Window",
 	["OPT_COLORBLIND"] = "Color Blind Mode",
 	["OPT_HIDEOUTDATED"] = "Hide Outdated Chat Notifications",
+	["OPT_FRAMERATE"] = "Animation FPS:",
+	["OPT_FRAMERATE1"] = "40",
+	["OPT_FRAMERATE2"] = "60",
+	["OPT_FRAMERATE3"] = "120",
+	["OPT_FRAMERATE4"] = "Unlimited",
+	["OPT_FRAMERATE_TIP"] = "How often the game board redraws. Higher is smoother but uses more CPU. Game speed is the same at every setting.",
 	["OPT_AUTO_OPEN"] = "Auto-Open:",
 	["OPT_AUTO_OPEN1"] = "On Flight Start",
 	["OPT_AUTO_OPEN2"] = "On Death",
@@ -351,7 +357,7 @@ e.locale = {
 	["TALENTS"] = "TALENTS",
 	["TALENTS_DESC"] = "Talents are 'passive' abilities that affect all characters",
 	["_THE_ITEM"] = "the item",
-	["_TOOLTIP_MINIMAP"] = "Left-click to show/hide game.\nRight-click to move icon.",
+	["_TOOLTIP_MINIMAP"] = "Click to show/hide game.\nDrag to move icon.",
 	["_TOTAL_MISS"] = "TOTAL MISS!",
 	["_TURNS"] = " TURNS",
 	["WIN_LOSS"] = "Win/Loss Record",
@@ -740,7 +746,7 @@ PeggleData.settings = {
 	inviteDecline = false,
 	hideOutdated = false,
 	soundVolume = 0,
-	minimapAngle = 270,
+	frameRate = 40,
 	defaultPublish = "GUILD",
 }
 PeggleData.version = e.versionID
@@ -2647,11 +2653,11 @@ local function We(o)
 			e:refreshChannels(EnumerateServerChannels())
 			for o = 1, #e.channelNames do
 				table.wipe(n)
-				n.text = e.channelNames[o]
-				if a == string.lower(n.text) then
-					t = n.text
+				n.value = e.channelNames[o]
+				n.text = e.channelLabels[n.value] or n.value
+				if a == string.lower(n.value) then
+					t = n.value
 				end
-				n.value = n.text
 				n.arg1 = 1
 				n.arg2 = dropdown
 				n.func = l
@@ -2978,6 +2984,10 @@ local function Pt(o, p, g, h, f)
 	end
 	t.x = p
 	t.y = g
+	t.prevX = p
+	t.prevY = g
+	t.drawX = p
+	t.drawY = g
 	t:ClearAllPoints()
 	t:SetPoint("Center", r, "Bottomleft", t.x, t.y)
 	t:SetAlpha(1)
@@ -3654,20 +3664,40 @@ local function qe(t, o, C, P)
 	end
 	o.bestObj = nil
 end
+-- Frame timing
+-- The game used to redraw at most every 0.025s (a 40 FPS cap) and ran
+-- floor(interval * speed / step) + 1 physics steps per redraw, which tied game
+-- speed to frame rate. Physics now runs from an accumulator at the rate the
+-- old code gave a 60 FPS client (one redraw every 1/30s): 1.2x normal speed,
+-- 0.3x last-peg slow-mo, 0.6x fever bucket slow-mo, 3.3x right-click
+-- fast-forward. The frame-rate cap (settings.frameRate, 0 = unlimited) only
+-- changes smoothness. Ball positions are interpolated between steps.
 local function Ne(o, n)
+	local fps = PeggleData.settings.frameRate or 40
+	if fps > 0 then
+		o.delay = 1 / fps
+	else
+		o.delay = 0
+	end
 	o.elapsed = o.elapsed + n
 	if o.elapsed < o.delay then
 		return
 	end
 	if not t:IsVisible() then
 		o.elapsed = 0
+		o.physicsElapsed = 0
 		return
 	end
-	o.elapsed = xe(o.elapsed, o.elapsed) * J
+	local frameTime = o.elapsed
+	local speed = J
+	o.elapsed = o.elapsed * J
 	if e.speedy == true then
 		o.elapsed = o.elapsed * 3
+		speed = speed * 3
 	end
 	local x = 1 / 100
+	o.frameScale = frameTime * 30
+	o.physicsElapsed = o.physicsElapsed + frameTime * (i(speed / 30 / x + 1e-6) + 1) * x * 30
 	local O = 0
 	local Be = be * x
 	local D = E
@@ -3680,7 +3710,6 @@ local function Ne(o, n)
 	local B, W, U, p
 	local oe = t.catcher
 	local Z
-	local ee = 0
 	local Ae = 10 + 40
 	local c = e.stats
 	t.catcher:Update(o.elapsed)
@@ -3779,15 +3808,12 @@ local function Ne(o, n)
 			if n.elapsed > n.life then
 				n:SetAlpha(1 - ((n.elapsed - n.life) / 0.2))
 			end
-			n.x = n.x + n.xVel * J
-			n.y = n.y + n.yVel * J
-			n.yVel = n.yVel + n.gravity * J
+			n.x = n.x + n.xVel * J * o.frameScale
+			n.y = n.y + n.yVel * J * o.frameScale
+			n.yVel = n.yVel + n.gravity * J * o.frameScale
 			m = m + 1
-			n.angle = n.angle + 10
-			if n.angle >= 360 then
-				n.angle = n.angle - 360
-			end
-			o:RotateTexture(n, n.angle, 0.5, 0.5)
+			n.angle = f(n.angle + 10 * o.frameScale, 360)
+			o:RotateTexture(n, i(n.angle), 0.5, 0.5)
 			n:SetPoint("Center", r, "BottomLeft", n.x, n.y)
 		end
 	end
@@ -3956,6 +3982,10 @@ local function Ne(o, n)
 		end
 	end
 	if Q then
+		o.guideElapsed = (o.guideElapsed or 0) + frameTime
+	end
+	if Q and (o.guideElapsed >= 0.025) then
+		o.guideElapsed = 0
 		if N ~= ht then
 			local t
 			for e = 1, ce do
@@ -4115,22 +4145,39 @@ local function Ne(o, n)
 		end
 	else
 	end
-	while ee <= o.elapsed do
+	-- The trail records one point per 1/30s (as for a 60 FPS client before)
+	-- so its length doesn't depend on frame rate.
+	o.trailElapsed = o.trailElapsed + frameTime
+	if o.trailElapsed >= 1 / 30 then
+		o.trailElapsed = math.min(o.trailElapsed - 1 / 30, 1 / 30)
+		for T = 1, #X do
+			n = X[T]
+			if n.isBall and n.trail1:IsShown() and not (n.y <= -100) then
+				for e = 30, 2, -1 do
+					n["trail" .. e].x = n["trail" .. (e - 1)].x
+					n["trail" .. e].y = n["trail" .. (e - 1)].y
+				end
+				n.trail1.x = n.drawX or n.x
+				n.trail1.y = n.drawY or n.y
+				for e = 1, 30 do
+					if n["trail" .. e].x > -100 then
+						n["trail" .. e]:ClearAllPoints()
+						n["trail" .. e]:SetPoint("Center", r, "Bottomleft", n["trail" .. e].x, n["trail" .. e].y)
+						n["trail" .. e]:Show()
+					end
+				end
+			end
+		end
+	end
+	while o.physicsElapsed >= x do
+		o.physicsElapsed = o.physicsElapsed - x
 		A = 1
 		for T = 1, #X do
 			n = X[A]
 			if n.isBall then
 				n.gravMultiplier = 1
-				if ee == 0 then
-					if n.trail1:IsShown() then
-						for e = 30, 2, -1 do
-							n["trail" .. e].x = n["trail" .. (e - 1)].x
-							n["trail" .. e].y = n["trail" .. (e - 1)].y
-						end
-						n.trail1.x = n.x
-						n.trail1.y = n.y
-					end
-				end
+				n.prevX = n.x
+				n.prevY = n.y
 				n.x = n.x + (n.xVel * x)
 				n.y = n.y + (n.yVel * x)
 				for e = 1, #X do
@@ -4439,15 +4486,6 @@ local function Ne(o, n)
 						n.lastX = n.x
 						n.lastY = n.y
 					end
-					for e = 1, 30 do
-						if n["trail" .. e].x > -100 then
-							n["trail" .. e]:ClearAllPoints()
-							n["trail" .. e]:SetPoint("Center", r, "Bottomleft", n["trail" .. e].x, n["trail" .. e].y)
-							n["trail" .. e]:Show()
-						end
-					end
-					n:ClearAllPoints()
-					n:SetPoint("Center", r, "Bottomleft", n.x, n.y)
 				else
 					u(X, A)
 					A = A - 1
@@ -4578,7 +4616,20 @@ local function Ne(o, n)
 			end
 			A = A + 1
 		end
-		ee = ee + x
+	end
+	-- Draw balls between their last two physics positions so motion stays
+	-- smooth when frames don't line up with physics steps.
+	local alpha = o.physicsElapsed / x
+	for T = 1, #X do
+		n = X[T]
+		if n.isBall and not (n.y <= -100) then
+			local prevX = n.prevX or n.x
+			local prevY = n.prevY or n.y
+			n.drawX = prevX + (n.x - prevX) * alpha
+			n.drawY = prevY + (n.y - prevY) * alpha
+			n:ClearAllPoints()
+			n:SetPoint("Center", r, "Bottomleft", n.drawX, n.drawY)
+		end
 	end
 	o.elapsed = 0
 end
@@ -4601,7 +4652,7 @@ local function ce(n, l)
 		l = l * 2
 		local o = r:GetScale()
 		if o > 1.001 then
-			o = o - 0.01
+			o = o - 0.01 * d.frameScale
 			if o < 1 then
 				o = 1
 				r:ClearAllPoints()
@@ -5915,6 +5966,25 @@ local function he()
 	n:SetBackdropColor(0.7, 0.7, 0.7, 1)
 	n.serverChannels = {}
 	n.channelNames = {}
+	n.channelLabels = {}
+	-- Community channels are named "Community:<clubId>:<streamId>"; show the
+	-- name the chat frame shows instead. The raw name is still what gets sent.
+	n.channelLabel = function(t, name)
+		if type(ChatFrame_ResolveChannelName) == "function" then
+			local label = ChatFrame_ResolveChannelName(name)
+			if label and label ~= "" then
+				return label
+			end
+		end
+		local club = string.match(name, "^Community:(%d+):%d+$")
+		if club and C_Club and C_Club.GetClubInfo then
+			local info = C_Club.GetClubInfo(club)
+			if info and info.name and info.name ~= "" then
+				return info.name
+			end
+		end
+		return name
+	end
 	n.refreshChannels = function(t, ...)
 		table.wipe(t.serverChannels)
 		local e
@@ -5922,6 +5992,7 @@ local function he()
 			s(t.serverChannels, (select(e, ...)))
 		end
 		table.wipe(t.channelNames)
+		table.wipe(t.channelLabels)
 		local e, n
 		for n = 1, 15 do
 			_, e = GetChannelName(n)
@@ -5934,6 +6005,7 @@ local function he()
 				end
 				if e then
 					s(t.channelNames, e)
+					t.channelLabels[e] = t:channelLabel(e)
 				end
 			end
 		end
@@ -8842,18 +8914,67 @@ local function _()
 	n:ClearAllPoints()
 	n:SetPoint("Top", 0, -70)
 	n = x(a, l, e.locale["OPT_MINIMAP"], "showMinimapIcon", true, d, function(e)
-		PeggleData.settings[e.key] = (e:GetChecked() == 1)
-		if e:GetChecked() == 1 then
+		PeggleData.settings[e.key] = (e:GetChecked() and true or false)
+		if PeggleData.settings.minimapIcon then
+			PeggleData.settings.minimapIcon.hide = not PeggleData.settings[e.key]
+		end
+		if e:GetChecked() then
 			t.minimap:Show()
 		else
 			t.minimap:Hide()
 		end
 	end, 1, 0.82, 0)
 	local r = function(e)
-		PeggleData.settings[e.key] = (e:GetChecked() == 1)
+		PeggleData.settings[e.key] = (e:GetChecked() and true or false)
 	end
 	n = x(a, l + 20, e.locale["OPT_COLORBLIND"], "colorBlindMode", true, d, r, 1, 0.82, 0)
 	n = x(a, l + 40, e.locale["OPT_HIDEOUTDATED"], "hideOutdated", true, d, r, 1, 0.82, 0)
+	local frameRates = { 40, 60, 120, 0 }
+	local frameRateClick = function(t)
+		PeggleData.settings.frameRate = frameRates[t:GetID()]
+		for e = 1, #frameRates do
+			getglobal("PeggleCheckbox_frameRate" .. e):SetChecked(e == t:GetID())
+		end
+	end
+	a = 50
+	l = 100
+	n = o:CreateCaption(a, l, e.locale["OPT_FRAMERATE"], d, 14, 1, 1, 0)
+	for c = 1, #frameRates do
+		n = x(
+			a + ((c - 1) % 2) * 80,
+			l + 20 + i((c - 1) / 2) * 20,
+			e.locale["OPT_FRAMERATE" .. c],
+			"frameRate" .. c,
+			true,
+			d,
+			frameRateClick,
+			1,
+			0.82,
+			0,
+			e.locale["OPT_FRAMERATE_TIP"]
+		)
+		n:SetID(c)
+		n:SetChecked(frameRates[c] == (PeggleData.settings.frameRate or 40))
+	end
+	-- This page is built before saved settings load, so set every checkbox
+	-- from the settings each time it opens.
+	d:SetScript("OnShow", function()
+		local settings = PeggleData.settings
+		for c, child in ipairs({ d:GetChildren() }) do
+			local key = child.key
+			if key and child:GetObjectType() == "CheckButton" then
+				local sound = string.match(key, "^soundVolume(%d)$")
+				local rate = string.match(key, "^frameRate(%d)$")
+				if sound then
+					child:SetChecked(settings.soundVolume == tonumber(sound) - 1)
+				elseif rate then
+					child:SetChecked(frameRates[tonumber(rate)] == (settings.frameRate or 40))
+				else
+					child:SetChecked(settings[key] == true)
+				end
+			end
+		end
+	end)
 	a = 50
 	l = 150 + 60 - 8 - 20
 	n = o:CreateCaption(a, l, e.locale["OPT_AUTO_OPEN"], d, 14, 1, 1, 0)
@@ -9183,7 +9304,7 @@ local function w(n, l, ...)
 			inviteDecline = false,
 			hideOutdated = false,
 			soundVolume = 0,
-			minimapAngle = 270,
+			frameRate = 40,
 			defaultPublish = "GUILD",
 		}
 		PeggleData.version = e.versionID
@@ -9244,15 +9365,19 @@ local function w(n, l, ...)
 	local l = t.catagoryScreen.frames[1]
 	l:UpdateDisplay(1)
 	t.levelList:UpdateList()
-	if PeggleData.settings.showMinimapIcon ~= true then
-		t.minimap:Hide()
+	-- LibDBIcon keeps the button's position in settings.minimapIcon. Carry
+	-- over the angle saved by older versions (which measured it the other
+	-- way round) and drop the settings the old button used.
+	local settings = PeggleData.settings
+	if type(settings.minimapIcon) ~= "table" then
+		settings.minimapIcon = { minimapPos = (180 - (settings.minimapAngle or 270)) % 360 }
 	end
-	-- The button always sits on the minimap's edge now; drop any position
-	-- saved by the old free-floating drag.
-	PeggleData.settings.minimapDetached = nil
-	PeggleData.settings.minimapX = nil
-	PeggleData.settings.minimapY = nil
-	t.minimap:UpdatePosition()
+	settings.minimapIcon.hide = settings.showMinimapIcon ~= true
+	settings.minimapAngle = nil
+	settings.minimapDetached = nil
+	settings.minimapX = nil
+	settings.minimapY = nil
+	t.minimap:Register(settings.minimapIcon)
 	R(false)
 	if PeggleData.settings.openLogIn ~= true then
 		n:Hide()
@@ -9803,6 +9928,10 @@ local function w()
 	e:SetAlpha(0)
 	e.elapsed = 0
 	e.delay = 0.025
+	e.physicsElapsed = 0
+	e.trailElapsed = 0
+	e.guideElapsed = 0
+	e.frameScale = 1
 	e:SetScript("OnUpdate", Ne)
 	e.tableCos = {}
 	e.tableSin = {}
@@ -10377,67 +10506,16 @@ local function G()
 	t.banner.tex = n
 	n:Hide()
 end
+-- Minimap button
+-- A LibDataBroker launcher shown on the minimap by LibDBIcon, like most
+-- addons' buttons. LibDBIcon handles dragging, position saving and minimap
+-- shapes, and button collectors and broker displays pick it up by name.
+-- t.minimap keeps the Show/Hide/Click/notice interface the rest of the addon
+-- uses; the button is registered once saved settings load (Register below).
 local function y()
-	local n = CreateFrame("Frame", "PeggledMinimapIcon", Minimap)
-	n:SetWidth(33)
-	n:SetHeight(33)
-	n:SetFrameStrata("LOW")
-	n:EnableMouse(true)
-	n:SetClampedToScreen(true)
-	n.icon = n:CreateTexture(nil, "Background")
-	n.icon:SetWidth(26)
-	n.icon:SetHeight(26)
-	n.icon:SetPoint("Center", -1, 1)
-	n.icon:SetTexture(e.artPath .. "minimap")
-	n.icon:Show()
-	n.icon2 = n:CreateTexture(nil, "Background")
-	n.icon2:SetWidth(26)
-	n.icon2:SetHeight(26)
-	n.icon2:SetPoint("Center", -1, 1)
-	n.icon2:SetTexture(e.artPath .. "minimapNotice")
-	n.icon2:Hide()
-	n.border = n:CreateTexture(nil, "Artwork")
-	n.border:SetWidth(52)
-	n.border:SetHeight(52)
-	n.border:SetPoint("Topleft")
-	n.border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-	n.highlight = n:CreateTexture(nil, "Overlay")
-	n.highlight:SetWidth(32)
-	n.highlight:SetHeight(32)
-	n.highlight:SetPoint("Center")
-	n.highlight:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
-	n.highlight:SetBlendMode("ADD")
-	n.highlight:Hide()
-	-- Keep the button on the edge of the minimap at the saved angle, whatever
-	-- size the minimap is. The old fixed radius of 76 suited a 140px minimap.
-	n.UpdatePosition = function(e)
-		local angle = T(PeggleData.settings.minimapAngle or 270)
-		local x, y = -k(angle), I(angle)
-		if GetMinimapShape and GetMinimapShape() == "SQUARE" then
-			-- Push the point out to the square's edge, as LibDBIcon does.
-			x = math.max(-1, math.min(1, x * 1.4142))
-			y = math.max(-1, math.min(1, y * 1.4142))
-		end
-		e:ClearAllPoints()
-		e:SetPoint("Center", Minimap, "Center", x * (Minimap:GetWidth() / 2 + 6), y * (Minimap:GetHeight() / 2 + 6))
-	end
-	n:SetFrameStrata("MEDIUM")
-	n:SetFrameLevel(8)
-	n:UpdatePosition()
-	Minimap:HookScript("OnSizeChanged", function()
-		n:UpdatePosition()
-	end)
-	n:Show()
-	n.elapsed = 0
-	n:SetScript("OnMouseDown", function(e, t)
-		e.icon:SetPoint("Center", 0, 0)
-		if t == "RightButton" then
-			e.moving = true
-		end
-	end)
-	n:SetScript("OnMouseUp", function(e, n)
-		e.icon:SetPoint("Center", -1, 1)
-		e.moving = nil
+	local ICON = e.artPath .. "minimap"
+	local ICON_NOTICE = e.artPath .. "minimapNotice"
+	local function click(o, n)
 		if n == "LeftButton" then
 			if t:IsVisible() then
 				t:Hide()
@@ -10465,46 +10543,52 @@ local function y()
 				t:Show()
 			end
 		end
-	end)
-	n:SetScript("OnEnter", function(t)
-		t.highlight:Show()
-		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
-		GameTooltip:SetText("|cFFFFFFFFPeggle")
-		GameTooltip:AddLine(e.locale["_TOOLTIP_MINIMAP"])
-		GameTooltip:Show()
-	end)
-	n:SetScript("OnLeave", function(e)
-		e.highlight:Hide()
-		GameTooltip:Hide()
-	end)
-	n:SetScript("OnUpdate", function(e, r)
-		if e.moving then
-			-- Follow the cursor around the minimap's edge. Work in the
-			-- minimap's own scale, which can differ from UIParent's.
-			local cx, cy = Minimap:GetCenter()
-			local scale = Minimap:GetEffectiveScale()
-			local x, y = GetCursorPosition()
-			PeggleData.settings.minimapAngle = gt(math.atan2(y / scale - cy, cx - x / scale))
-			e:UpdatePosition()
+	end
+	local broker = LibStub("LibDataBroker-1.1"):NewDataObject("PeggleForever", {
+		type = "launcher",
+		label = "Peggle",
+		icon = ICON,
+		OnClick = click,
+		OnTooltipShow = function(tip)
+			tip:AddLine("|cFFFFFFFFPeggle")
+			tip:AddLine(e.locale["_TOOLTIP_MINIMAP"])
+		end,
+	})
+	local icon = LibStub("LibDBIcon-1.0")
+	local n = {}
+	n.Register = function(n, db)
+		if icon:IsRegistered("PeggleForever") then
+			icon:Refresh("PeggleForever", db)
+		else
+			icon:Register("PeggleForever", broker, db)
 		end
-		if e.notice then
-			e.elapsed = e.elapsed + r
-			if e.elapsed >= 0.5 then
-				e.elapsed = 0
-				if e.icon:IsShown() then
-					e.icon:Hide()
-					e.icon2:Show()
-					e.on = true
+	end
+	n.Show = function()
+		icon:Show("PeggleForever")
+	end
+	n.Hide = function()
+		icon:Hide("PeggleForever")
+	end
+	n.Click = function()
+		click(nil, "LeftButton")
+	end
+	-- Flash the icon while n.notice is set (pending duel invite).
+	local flash = CreateFrame("Frame")
+	flash.elapsed = 0
+	flash:SetScript("OnUpdate", function(o, l)
+		if n.notice then
+			o.elapsed = o.elapsed + l
+			if o.elapsed >= 0.5 then
+				o.elapsed = 0
+				if broker.icon == ICON then
+					broker.icon = ICON_NOTICE
 				else
-					e.icon:Show()
-					e.icon2:Hide()
-					e.on = nil
+					broker.icon = ICON
 				end
 			end
-		elseif e.on then
-			e.icon:Show()
-			e.icon2:Hide()
-			e.on = nil
+		elseif broker.icon ~= ICON then
+			o.elapsed = 0
+			broker.icon = ICON
 		end
 	end)
 	t.minimap = n
@@ -11145,7 +11229,7 @@ local function k()
 						end
 						if PeggleData.settings.openDuel then
 							if not t:IsVisible() then
-								t.minimap:GetScript("OnMouseUp")(t.minimap, "LeftButton")
+								t.minimap:Click()
 							end
 						end
 						local e = t.catagoryScreen

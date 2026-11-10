@@ -10,8 +10,14 @@ Peggle Forever v1.0.0 (based on Peggle 1.02)
 - Renamed the addon folder to PeggleForever; art and sound paths now come from the folder name instead of being hard-coded.
 - Fixed duel scores from players with a surname arriving as 0: UnitName now returns the full "Name Surname", matching the sender of addon messages.
 - The game window no longer opens on login by default. Turn on Auto-Open: On Log-in in the options to bring it back.
-- The minimap button now stays on the edge of the minimap at any minimap size or scale (including square minimaps), like a standard minimap button. Right-drag moves it around the edge; it can no longer be dragged loose onto the screen.
+- The minimap button is now a standard LibDBIcon button. Drag it with the left mouse button to move it around the minimap's edge. Minimap button collectors (MinimapButtonButton, MBB, Leatrix Plus, SexyMap, ElvUI and others) and LDB displays such as Titan Panel and ChocolateBar now pick it up. Its saved position is kept.
 - Brag messages now say [Peggle Forever] and point players to the Peggle Forever addon.
+- New Animation FPS option (40, 60, 120 or Unlimited). The game used to redraw at most 40 times a second.
+- Game speed no longer depends on your frame rate. Before, the ball moved slower on high-refresh-rate machines and slow-motion varied between machines. All speeds now match what a 60 FPS player had before.
+- The brag channel drop-down works again.
+- Community channels in the brag channel drop-down now show the community's name instead of an internal ID.
+- Ticking an option in the options screen now saves it. On this client it was always saved as off.
+- The options screen now shows your saved settings after a reload, instead of the defaults.
 
 v1.02
 - Added a new feature that will display a chat notification when the user recieves game data from another user with the original version of Peggle (1.0). This notification will let you know that they are using a very outdated version, and to let them know so they can update, otherwise they can't play with Peggle users with later versions.

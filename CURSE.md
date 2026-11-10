@@ -19,9 +19,10 @@ In 2009 PopCap released a full version of Peggle that ran inside the WoW client:
 Open the game and go to its options screen.
 
 - **Sounds:** Normal, Quiet or Off.
+- **Animation FPS:** 40, 60, 120 or Unlimited. Higher settings animate the board more smoothly but use more CPU. The game plays at the same speed on every setting.
 - **Mouse-on / Mouse-off Transparency:** fade the window when your mouse isn't over it.
 - **Lock Window**
-- **Show Mini-map Icon**
+- **Show Mini-map Icon:** a standard minimap button. Drag it to move it; it works with minimap button collectors and LDB displays such as Titan Panel.
 - **New Game on Flight Start**
 - **Color Blind Mode**
 - **Hide Outdated Chat Notifications:** stop the warnings about players on very old versions of Peggle.
