@@ -5329,6 +5329,9 @@ local function ge(n)
 	return true
 end
 local function X(n, n, e, ...)
+	if issecretvalue and issecretvalue(e) then
+		return false
+	end
 	e = gsub(e, "%*", "")
 	local e = { strsplit(",", e) }
 	local n = t.catagoryScreen.frames[3].content2
@@ -5343,6 +5346,9 @@ local function X(n, n, e, ...)
 	return true
 end
 local function M(n, a, t, ...)
+	if issecretvalue and issecretvalue(t) then
+		return false
+	end
 	local t = string.match(t, e.filterText)
 	if t then
 		if e.onlineList[t] then
@@ -10830,6 +10836,10 @@ local function k()
 		end
 	end)
 	i:SetScript("OnEvent", function(m, n, C, i, l, a)
+		-- Chat payloads can be secret values (e.g. in combat/instances); comparing them errors.
+		if issecretvalue and (issecretvalue(C) or issecretvalue(i) or issecretvalue(a)) then
+			return
+		end
 		if (n == "CHAT_MSG_SYSTEM") and m.watchError then
 			if string.find(C, m.watchError) then
 				m.watchError = nil
