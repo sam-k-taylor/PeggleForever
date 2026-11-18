@@ -60,7 +60,7 @@ local TEXT = {
 	you = "(you)",
 	range = "%d-%d of %d",
 	beaten = "Level beaten",
-	cleared = "All orange pegs cleared",
+	cleared = "All pegs cleared",
 }
 
 local Guild = {}
