@@ -14,4 +14,5 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 Compat.lua
 ExtraLevels.lua
+GuildScores.lua
 Peggle.lua

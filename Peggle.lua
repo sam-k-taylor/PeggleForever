@@ -474,6 +474,7 @@ e.artCut["tabChallenge"] = { 203 / 512, 319 / 512, 0 / 256, 64 / 256 }
 e.artCut["tabTalents"] = { 319 / 512, 416 / 512, 0 / 256, 64 / 256 }
 e.artCut["tabHowToPlay"] = { 0 / 512, 141 / 512, 192 / 256, 256 / 256 }
 e.artCut["tabOptions"] = { 416 / 512, 512 / 512, 0 / 256, 64 / 256 }
+e.artCut["tabGuild"] = { 0 / 512, 160 / 512, 0 / 256, 64 / 256 } -- in tabGuild.tga
 e.artCut["buttonOkay"] = { 0 / 256, 158 / 256, 0 / 256, 54 / 256 }
 e.artCut["buttonGo"] = { 0 / 256, 158 / 256, 54 / 256, 108 / 256 }
 e.artCut["buttonResetTalents"] = { 175 / 256, 219 / 256, 25 / 256, 182 / 256 }
@@ -1253,6 +1254,7 @@ local function lt(l, n, o)
 			end
 			V[g] = U(a .. o, p(H))
 		end
+		PeggleGuild:ScoresChanged()
 		if t.duelStatus == 3 then
 			local n = t.catagoryScreen.frames[2]
 			local o, l, a = _e()
@@ -2355,14 +2357,14 @@ e.sparkleFunc = function(e, n)
 		end
 	end
 end
-local function De(a, c, n, d, o, r, l)
+local function De(a, c, n, d, o, r, l, file)
 	local o = e.artCut[o]
 	local n = CreateFrame("Frame", "", n)
 	n:SetPoint("Topleft", a, 0)
 	n:SetWidth(i((o[2] - o[1]) * 512 + 0.5))
 	n:SetHeight(i((o[4] - o[3]) * 256 + 0.5))
 	tex = n:CreateTexture(nil, "Artwork")
-	tex:SetTexture(e.artPath .. "tabs")
+	tex:SetTexture(e.artPath .. (file or "tabs"))
 	tex:SetAllPoints(n)
 	tex:SetTexCoord(unpack(o))
 	n.tex = tex
@@ -9307,14 +9309,14 @@ local function K()
 	n:Hide()
 	n:SetScript("OnShow", function(n)
 		local n
-		for n = 1, 6 do
+		for n = 1, #t.catagoryScreen.frames do
 			t.catagoryScreen.frames[n]:SetAlpha(0)
 		end
 		e.outdatedText:SetAlpha(0)
 	end)
 	n:SetScript("OnHide", function(n)
 		local n
-		for n = 1, 6 do
+		for n = 1, #t.catagoryScreen.frames do
 			t.catagoryScreen.frames[n]:SetAlpha(1)
 		end
 		e.outdatedText:SetAlpha(1)
@@ -9430,7 +9432,22 @@ local function w(n, l, ...)
 	V = PeggleData
 	Y = PeggleProfile.challenges
 	H = PeggleData.loggedIn
-	De(t.catagoryScreen.tabFrame.currentX, 0, t.catagoryScreen.tabFrame, _(), "tabOptions", nil)
+	do
+		local tabs = t.catagoryScreen.tabFrame
+		local options = _()
+		-- The guild leaderboard is built after Options so Options stays frames[6], but its tab
+		-- goes before the Options tab.
+		local guild = PeggleGuild:CreateScreen(t.catagoryScreen, t.levelList, e.artPath)
+		table.insert(t.catagoryScreen.frames, guild)
+		local tab, x = De(tabs.currentX, 0, tabs, guild, "tabGuild", nil, nil, "tabGuild")
+		tab, x = De(x, 0, tabs, options, "tabOptions", nil)
+		-- seven tabs are wider than the window: shrink the row to fit, keeping its bottom edge
+		local scale = tabs:GetWidth() / x
+		tabs:SetWidth(x)
+		tabs:SetScale(scale)
+		tabs:ClearAllPoints()
+		tabs:SetPoint("BottomLeft", t.catagoryScreen, "TopLeft", -4 / scale, -10 / scale)
+	end
 	local l = L(V[g], p(H))
 	if not l then
 		l = Be()
@@ -9611,6 +9628,7 @@ local function w(n, l, ...)
 		end
 	end
 	PeggleExtra:Install(ie, e.locale)
+	PeggleGuild:Install(Z)
 	local a = n
 	t.splash:Show()
 	if not t.legal then
@@ -9681,6 +9699,7 @@ local function w(n, l, ...)
 		SlashCmdList["PEGGLELOOT"] = function() end
 		e.addonName = "PEGGLE_BROKE"
 		t.network.prefix = e.addonName
+		PeggleGuild.disabled = true
 	end
 	local t, t
 	for t, n in pairs(e.locale) do

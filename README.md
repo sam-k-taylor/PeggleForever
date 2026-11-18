@@ -4,7 +4,7 @@
 
 PopCap's 2009 World of Warcraft Peggle addon (v1.02), patched to run on WoW Forever (1.60.1, Interface 16001).
 
-The game code is PopCap's original. Almost everything the modern client removed or changed is handled by a compatibility layer, `Compat.lua`. Edits to `Peggle.lua` are kept small: the `setfenv` on its first line, reading its addon path from `PEGGLE_ADDON_PATH`, passing the now-required flags argument (`""`) to `SetFont`, the fixes listed in `changelog.txt`, and the hooks for level packs (see below).
+The game code is PopCap's original. Almost everything the modern client removed or changed is handled by a compatibility layer, `Compat.lua`. Edits to `Peggle.lua` are kept small: the `setfenv` on its first line, reading its addon path from `PEGGLE_ADDON_PATH`, passing the now-required flags argument (`""`) to `SetFont`, the fixes listed in `changelog.txt`, and the hooks for level packs and the guild leaderboard (see below).
 
 ## Layout
 
@@ -12,6 +12,7 @@ The game code is PopCap's original. Almost everything the modern client removed 
 PeggleForever.toc Addon manifest (Interface 16001 = WoW Forever 1.60.1)
 Compat.lua        Compatibility layer: maps removed APIs, templates and widget methods onto modern ones
 ExtraLevels.lua   Level pack API (PeggleForever_RegisterLevelPack): saved progress and level-list paging
+GuildScores.lua   Guild leaderboard: shares best scores with guildmates and draws the Leaderboard tab
 Peggle.lua        PopCap's original game code (minified with LuaSrcDiet, reformatted with StyLua)
 stylua.toml       StyLua settings used to format Peggle.lua
 package.sh        Builds the release zip into .release/
@@ -71,6 +72,18 @@ Other addons can add levels by calling `PeggleForever_RegisterLevelPack` (docume
 - Pack levels get ids 13 and up in load order (57 at most). Their best score and completion (played, beaten, all pegs cleared) are saved in `PeggleData.extraLevels` by `"<pack id>:<level key>"`, apart from the checksummed save string that holds levels 1-12 and the talent ranks. They don't award talent points.
 - Pack levels work in duels. The invite names the level by key plus a fingerprint of its data (`dp` message), since level ids depend on load order. The opponent's game replies `dm` if it lacks the pack or has a different version, and the challenger sees why. Older versions ignore `dp`, so the invite times out with a message saying the pack is needed. Duel win/loss counts for pack levels are kept by level key.
 - Battles and Peggle Loot only use levels 1-12.
+
+## Guild leaderboard
+
+The Leaderboard tab ranks everyone in your guild who has Peggle Forever by their best score on the level picked in the level list. `GuildScores.lua` handles it, using its own hidden addon message prefix (`PeggleFvrGuild`), so nothing shows in chat and older versions ignore it. The protocol is described at the top of the file.
+
+- About 10 seconds after logging in, you send your best scores to the guild and ask everyone else for theirs (`R2`). Each player who has the addon sends their scores to the guild after a random delay of up to 5 seconds. Requests that arrive during that wait share one answer. Answers don't go by whisper because senders arrive as `Name Surname-Realm`, which isn't a valid whisper target.
+- After you finish a level your scores go to the guild again, unless nothing has changed since the last time you sent them.
+- Opening the tab asks the guild again if you haven't asked in the last two minutes.
+- Scores are sent per level: the level number for levels 1-12, the pack key for pack levels. Each message stays under the 255-byte limit and makes sense by itself, and messages are queued and sent one at a time.
+- Best scores are saved per WoW account, not per character, so each message carries a random account id (`PeggleData.guildAccount`, made once). The board lists each account once, under the character it heard from most recently, and messages with your own id (your echoes, or your alts on the same account) are ignored.
+- Scores you receive are saved in `PeggleData.guildScores`, keyed by guild and then by account id. Accounts you haven't heard from in 90 days are dropped.
+- The tab art is `images/tabGuild.tga`, made from the How To Play tab. Seven tabs are wider than the window, so the tab row is scaled down to fit.
 
 ## Debugging
 

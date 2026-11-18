@@ -3,6 +3,7 @@ Changelog
 Peggle Forever (unreleased)
 - Level packs: other addons can add Quick Play levels (PeggleForever_RegisterLevelPack). Install PeggleForever_WoWLevels for the ten levels of Peggle World of Warcraft (PC). Pick a pack from the drop-down at the top of the level list.
 - Pack levels keep their own best score and completion banners (beaten, all pegs cleared) and don't award talent points. You can duel on pack levels: if your opponent doesn't have the same pack, the duel screen tells you. Battles and Peggle Loot still use the original twelve levels.
+- New Leaderboard tab: pick a level on the left to see your guild's best scores on it, ranked, with each player's beaten and all-pegs-cleared banners. Scores are shared in the background with guild members who have Peggle Forever: when you log in, when you finish a level, and when you open the tab. None of this shows in chat.
 - Fixed a random error when sending a duel invite, starting a battle or starting Peggle Loot (from the 2009 code: picking the second green peg could look up a peg that had already been removed).
 
 Peggle Forever v1.0.0 (based on Peggle 1.02)
