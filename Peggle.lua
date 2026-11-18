@@ -153,6 +153,9 @@ e.locale = {
 	["DUEL_STATUS4"] = "User does not have Peggle addon turned on.",
 	["DUEL_STATUS5"] = "User is currently being challenged. Try again in a few minutes.",
 	["DUEL_STATUS6"] = "Challenger cancelled the duel.",
+	["_DUEL_PACK_MISSING"] = "%s doesn't have the %s level pack.",
+	["_DUEL_PACK_VERSION"] = "%s has a different version of the %s level pack. Make sure you both have the latest version.",
+	["_DUEL_PACK_NOANSWER"] = "No answer from %s. To duel on this level they need the latest Peggle Forever and the %s level pack.",
 	["DUEL_TIME"] = "Duel time remaining: %s",
 	["DUEL_TOTAL_WL"] = "Total Win/Loss: %d - %d",
 	["DUEL_WAITING"] = "Your opponent is still playing...",
@@ -303,6 +306,7 @@ e.locale = {
 	["_REQUIRES_5"] = "|cFFFF0000Requires 5 points in %s.\n",
 	["_REQUIRES_X"] = "|cFFFF0000Requires %d points in Peggle Talents.\n",
 	["SELECT_LEVEL"] = "SELECT A LEVEL",
+	["_LEVELS_ORIGINAL"] = "Original",
 	["SCORE"] = "Score",
 	["SCORE_BEST"] = "Best",
 	["SCORE_TIME_LEFT"] = "Time Left: %s",
@@ -579,6 +583,8 @@ e.commands = {
 	"plg",
 	"pls",
 	"plp",
+	"dp",
+	"dm",
 }
 e.sounds = {
 	"applause.ogg",
@@ -1210,38 +1216,43 @@ local function lt(l, n, o)
 	end
 	local d
 	if l then
-		local a = c(i, 1, 7)
-		local r
-		if o ~= 0 then
-			local t = D(o)
-			local e = D(S(a))
-			local l = W(e, n + 1) - 48
-			if l == 0 then
-				r = true
-			end
-			if l < o then
-				d = o - 1
-				if n == 1 then
-					a = h(A("1" .. t .. c(e, 3)), 7)
-				elseif n == 12 then
-					a = h(A("1" .. c(e, 2, n) .. t), 7)
-				else
-					a = h(A("1" .. c(e, 2, n) .. t .. c(e, n + 2)), 7)
+		if PeggleExtra:IsExtra(n) then
+			-- pack levels keep their own records; the duel result below is sent either way
+			PeggleExtra:SaveBest(n, l, o)
+		else
+			local a = c(i, 1, 7)
+			local r
+			if o ~= 0 then
+				local t = D(o)
+				local e = D(S(a))
+				local l = W(e, n + 1) - 48
+				if l == 0 then
+					r = true
 				end
-				Z[n + 12] = o
+				if l < o then
+					d = o - 1
+					if n == 1 then
+						a = h(A("1" .. t .. c(e, 3)), 7)
+					elseif n == 12 then
+						a = h(A("1" .. c(e, 2, n) .. t), 7)
+					else
+						a = h(A("1" .. c(e, 2, n) .. t .. c(e, n + 2)), 7)
+					end
+					Z[n + 12] = o
+				end
 			end
-		end
-		local o = c(i, 8)
-		local i = S(c(o, (n - 1) * 4 + 1, n * 4))
-		if (l > i) or r then
-			if n == 1 then
-				o = h(l, 4) .. c(o, 5)
-			else
-				o = c(o, 1, (n - 1) * 4) .. h(l, 4) .. c(o, n * 4 + 1)
+			local o = c(i, 8)
+			local i = S(c(o, (n - 1) * 4 + 1, n * 4))
+			if (l > i) or r then
+				if n == 1 then
+					o = h(l, 4) .. c(o, 5)
+				else
+					o = c(o, 1, (n - 1) * 4) .. h(l, 4) .. c(o, n * 4 + 1)
+				end
+				Z[n] = l
 			end
-			Z[n] = l
+			V[g] = U(a .. o, p(H))
 		end
-		V[g] = U(a .. o, p(H))
 		if t.duelStatus == 3 then
 			local n = t.catagoryScreen.frames[2]
 			local o, l, a = _e()
@@ -1642,7 +1653,7 @@ local function Ae(o, h, p, T)
 		s(t.ballTracker.ballQueue, n)
 	end
 	Fe(o)
-	r.background:SetTexture(e.artPath .. "bg" .. ee)
+	r.background:SetTexture(PeggleExtra:Background(ee, e.artPath))
 	local f, o, i
 	if h then
 		o = c(h[g], 13 + 3, 68 + 3)
@@ -1777,7 +1788,7 @@ local function Ae(o, h, p, T)
 	Ie:SetText(We)
 	d.lastPeg = nil
 	Q = false
-	x:SetText(P(Z[ee]))
+	x:SetText(P(PeggleExtra:Best(ee, Z)))
 	r:ClearAllPoints()
 	r:SetPoint("center")
 	r:SetScale(1)
@@ -4959,7 +4970,7 @@ local function re(n, r, f)
 				Me(w)
 			end
 			V["r" .. "ece" .. "nt"][ee] = w
-			if w > Z[ee] then
+			if w > PeggleExtra:Best(ee, Z) then
 				lt(w, ee, 1)
 			else
 				if t.duelStatus == 3 then
@@ -5249,7 +5260,7 @@ local function pe(c, m, x, d, l, S)
 		i = nil
 		while i == nil do
 			if a then
-				if (((B[e[t]].x - B[e[a]].x) ^ 2) + ((B[e[t]].y - B[e[a]].y) ^ 2)) < s then
+				if (((B[e[t]].x - B[a].x) ^ 2) + ((B[e[t]].y - B[a].y) ^ 2)) < s then
 					if #e > 0 then
 						t = C(1, #e)
 					end
@@ -5257,7 +5268,9 @@ local function pe(c, m, x, d, l, S)
 					i = true
 				end
 			else
-				a = t
+				-- Remember the first green peg itself, not its slot in the shrinking list (the 2009 code
+				-- crashed when that slot was the last one, and compared against the wrong peg otherwise).
+				a = e[t]
 				i = true
 			end
 		end
@@ -5877,7 +5890,7 @@ local function he()
 		end
 		local t = i(e.stats[3] / e.stats[7] * 100)
 		n.title:SetText(e.locale["_SUMMARY_TITLE" .. o])
-		n.best:SetFormattedText(n.best.caption1, P(Z[ee]))
+		n.best:SetFormattedText(n.best.caption1, P(PeggleExtra:Best(ee, Z)))
 		n.current:SetFormattedText(n.current.caption1, P(w))
 		n.stat1:SetText(e.stats[1])
 		n.stat2:SetText(e.stats[2])
@@ -6285,7 +6298,7 @@ local function me()
 		t.levelList:Show()
 	end)
 	n.UpdateDisplay = function(n, t)
-		local o = Z[t]
+		local o = PeggleExtra:Best(t, Z)
 		if o == 0 then
 			n.beatLevel:Show()
 			n.best:Hide()
@@ -6297,9 +6310,24 @@ local function me()
 			n.points:Show()
 			n.points:SetText(P(o))
 			n.mostRecentFrame:Show()
-			n.mostRecentPoints:SetText(P(PeggleData.recent[t]))
+			n.mostRecentPoints:SetText(P(PeggleData.recent[t] or o))
 		end
-		local o = Z[t + 12]
+		n.levelImage:SetTexture(PeggleExtra:Thumbnail(n.showID, e.artPath))
+		local o = PeggleExtra:Flags(t, Z)
+		local extra = PeggleExtra:IsExtra(t)
+		-- extra levels award no talent points
+		for _, l in ipairs({ n.talent1, n.talent2 }) do
+			if not extra then
+				l:Show()
+				l.tex:Show()
+			else
+				l:Hide()
+				l.tex:Hide()
+			end
+		end
+		if extra then
+			return
+		end
 		local t
 		t = n.talent2
 		if o == 3 then
@@ -6321,7 +6349,6 @@ local function me()
 			t.tex:SetTexCoord(unpack(t.tex.off))
 			t:SetVertexColor(1, 1, 0)
 		end
-		n.levelImage:SetTexture(e.artPath .. "bg" .. n.showID .. "_thumb")
 	end
 	local l = o:CreateCaption(0, 0, e.locale["QUICK_PLAY"], n, 40, 0.05, 0.66, 1, 1, nil)
 	l:ClearAllPoints()
@@ -6330,27 +6357,72 @@ local function me()
 	c:SetPoint("TopLeft")
 	c:SetPoint("BottomRight")
 	t.levelList = c
-	c.UpdateList = function(e)
-		local t, n
+	-- Rows show one section of levels: the original twelve, or a level pack's (12 at a time).
+	-- With a pack installed, the drop-down at the top picks the section; each screen sharing
+	-- this list (Quick Play, Duel) remembers its own in levelSection.
+	c.UpdateList = function(list)
+		local screen = list:GetParent()
+		local sections = PeggleExtra:Sections()
+		screen.levelSection = screen.levelSection or PeggleExtra:SectionOf(screen.showID)
+		local section = sections[screen.levelSection] or sections[1]
+		local id, n, row
 		for t = 1, 12 do
-			n = Z[t + 12]
-			if n == 3 then
-				e["flag" .. t .. "a"]:Show()
-				e["flag" .. t .. "b"]:Show()
-			elseif n == 2 then
-				e["flag" .. t .. "a"]:Show()
-				e["flag" .. t .. "b"]:Hide()
+			id = section.ids[t]
+			row = list["highlight" .. t]
+			if not id then
+				list["number" .. t]:Hide()
+				list["name" .. t]:Hide()
+				list["flag" .. t .. "a"]:Hide()
+				list["flag" .. t .. "b"]:Hide()
+				row:Hide()
+				row.tex:Hide()
 			else
-				e["flag" .. t .. "a"]:Hide()
-				e["flag" .. t .. "b"]:Hide()
+				list["number" .. t]:SetText(((section.part or 1) - 1) * 12 + t)
+				list["number" .. t]:Show()
+				list["name" .. t]:SetText(e.locale["_LEVEL_NAME" .. id])
+				list["name" .. t]:Show()
+				row:SetID(id)
+				row:Show()
+				row.tex:Show()
+				n = PeggleExtra:Flags(id, Z)
+				if n == 3 then
+					list["flag" .. t .. "a"]:Show()
+					list["flag" .. t .. "b"]:Show()
+				elseif n == 2 then
+					list["flag" .. t .. "a"]:Show()
+					list["flag" .. t .. "b"]:Hide()
+				else
+					list["flag" .. t .. "a"]:Hide()
+					list["flag" .. t .. "b"]:Hide()
+				end
+				row.tex:SetAlpha(id == screen.showID and 1 or 0)
 			end
-			e["highlight" .. t].tex:SetAlpha(0)
 		end
-		e["highlight" .. e:GetParent().showID].tex:SetAlpha(1)
+		if PeggleExtra:Count() > 0 then
+			list.selectCaption:Hide()
+			UIDropDownMenu_SetText(list.packMenu, section.title)
+			list.packMenu:Show()
+		else
+			list.packMenu:Hide()
+			list.selectCaption:Show()
+		end
 	end
 	l = o:CreateCaption(0, 0, e.locale["SELECT_LEVEL"], c, 26, 1, 0.82, 0, 1, nil)
 	l:ClearAllPoints()
 	l:SetPoint("Top", c, "Topleft", 170, -60)
+	c.selectCaption = l
+	-- level pack drop-down, in place of the caption above when any pack is installed
+	l = CreateFrame("Frame", "PeggleLevelPackDropdown", c, "UIDropDownMenuTemplate")
+	l:SetPoint("Top", c, "Topleft", 170, -60)
+	l.peggleMenu = true
+	l.fontObject = t.fontObj
+	getglobal(l:GetName() .. "Text"):SetFontObject(t.fontObj)
+	getglobal(l:GetName() .. "Text"):SetVertexColor(1, 0.82, 0)
+	getglobal(l:GetName() .. "Text"):SetJustifyH("CENTER")
+	UIDropDownMenu_SetWidth(l, 220)
+	PeggleExtra:InitPackMenu(l, c)
+	l:Hide()
+	c.packMenu = l
 	local r = CreateFrame("Frame", "", c)
 	r:SetPoint("Topleft", 20, -90)
 	r:SetPoint("Bottomleft", 20, 100)
@@ -6375,10 +6447,9 @@ local function me()
 	local h = function(e)
 		local t = e:GetParent():GetParent():GetParent()
 		if t.showID ~= e:GetID() then
-			e:GetParent():GetParent()["highlight" .. t.showID].tex:SetAlpha(0)
 			t.showID = e:GetID()
 			t:UpdateDisplay(e:GetID())
-			e.tex:SetAlpha(1)
+			e:GetParent():GetParent():UpdateList()
 		end
 	end
 	local u, t, u
@@ -6387,9 +6458,11 @@ local function me()
 		l:SetWidth(32)
 		l:SetHeight(14)
 		l:SetJustifyH("LEFT")
+		c["number" .. a] = l
 		l = o:CreateCaption(42, 10 + (a - 1) * 20, e.locale["_LEVEL_NAME" .. a], r, 19, 1, 1, 1, 1, nil)
 		l:SetWidth(300 - 42 - 42)
 		l:SetHeight(14)
+		c["name" .. a] = l
 		t = r:CreateTexture(nil, "Overlay")
 		t:SetWidth(16)
 		t:SetHeight(16)
@@ -6548,11 +6621,12 @@ local function oe()
 	end)
 	n.UpdateDisplay = function(n, o)
 		n.showID = o or n.showID
-		n.levelImage:SetTexture(e.artPath .. "bg" .. n.showID .. "_thumb")
-		n.levelImage2:SetTexture(e.artPath .. "bg" .. n.showID .. "_thumb")
+		n.levelImage:SetTexture(PeggleExtra:Thumbnail(n.showID, e.artPath))
+		n.levelImage2:SetTexture(PeggleExtra:Thumbnail(n.showID, e.artPath))
 		local e, l = 0, 0
-		if PeggleProfile.levelTracking[o] then
-			e, l = strsplit(",", PeggleProfile.levelTracking[n.showID])
+		local k = PeggleExtra:TrackingKey(n.showID)
+		if PeggleProfile.levelTracking[k] then
+			e, l = strsplit(",", PeggleProfile.levelTracking[k])
 		end
 		t.catagoryScreen.frames[2].winLossCount:SetFormattedText("%d - %d", e, l)
 	end
@@ -6629,8 +6703,8 @@ local function oe()
 			if PeggleProfile.duelTracking[l] then
 				a, i = strsplit(",", PeggleProfile.duelTracking[l])
 			end
-			if PeggleProfile.levelTracking[ee] then
-				c, d = strsplit(",", PeggleProfile.levelTracking[ee])
+			if PeggleProfile.levelTracking[PeggleExtra:TrackingKey(ee)] then
+				c, d = strsplit(",", PeggleProfile.levelTracking[PeggleExtra:TrackingKey(ee)])
 			end
 			s.finished = true
 			o.publish:Hide()
@@ -6656,7 +6730,7 @@ local function oe()
 				o.resultStatus:SetFormattedText(o.resultStatus.caption4)
 			end
 			PeggleProfile.duelTracking[l] = D(a) .. "," .. D(i)
-			PeggleProfile.levelTracking[ee] = D(c) .. "," .. D(d)
+			PeggleProfile.levelTracking[PeggleExtra:TrackingKey(ee)] = D(c) .. "," .. D(d)
 			o:UpdateDisplay(o.showID)
 			o.name2:SetText("")
 			o.name2:SetText(l)
@@ -6674,12 +6748,10 @@ local function oe()
 		a, i = 0, 0
 		local l, e
 		local t
-		for t = 1, 12 do
-			if PeggleProfile.levelTracking[t] then
-				l, e = strsplit(",", PeggleProfile.levelTracking[t])
-				a = a + A(l)
-				i = i + A(e)
-			end
+		for _, t in pairs(PeggleProfile.levelTracking) do
+			l, e = strsplit(",", t)
+			a = a + A(l)
+			i = i + A(e)
 		end
 		o.winLossDuels:SetFormattedText(o.winLossDuels.caption1, a, i)
 	end
@@ -6855,7 +6927,7 @@ local function oe()
 				r = nil
 				while r == nil do
 					if i then
-						if (((B[o[l]].x - B[o[i]].x) ^ 2) + ((B[o[l]].y - B[o[i]].y) ^ 2)) < c then
+						if (((B[o[l]].x - B[i].x) ^ 2) + ((B[o[l]].y - B[i].y) ^ 2)) < c then
 							if #o > 0 then
 								l = C(1, #o)
 							end
@@ -6863,7 +6935,9 @@ local function oe()
 							r = true
 						end
 					else
-						i = l
+						-- Remember the first green peg itself, not its slot in the shrinking list (the 2009 code
+						-- crashed when that slot was the last one, and compared against the wrong peg otherwise).
+						i = o[l]
 						r = true
 					end
 				end
@@ -6884,7 +6958,17 @@ local function oe()
 			if o == "" then
 				o = NONE
 			end
-			SendAddonMessage(t.network.prefix, e.commands[1] .. "+" .. n.showID .. "+" .. o .. "+" .. a, "WHISPER", d)
+			if PeggleExtra:IsExtra(n.showID) then
+				-- older versions ignore "dp", so they never try to load a level they don't have
+				SendAddonMessage(
+					t.network.prefix,
+					e.commands[23] .. "+" .. PeggleExtra:Ref(n.showID) .. "+" .. o .. "+" .. a,
+					"WHISPER",
+					d
+				)
+			else
+				SendAddonMessage(t.network.prefix, e.commands[1] .. "+" .. n.showID .. "+" .. o .. "+" .. a, "WHISPER", d)
+			end
 		end
 	end)
 	n:ClearAllPoints()
@@ -9526,6 +9610,7 @@ local function w(n, l, ...)
 			n = true
 		end
 	end
+	PeggleExtra:Install(ie, e.locale)
 	local a = n
 	t.splash:Show()
 	if not t.legal then
@@ -10799,7 +10884,11 @@ local function k()
 				e.inviteTimer = nil
 				if t.duelStatus then
 					local e = t.catagoryScreen.frames[2]
-					e.note3:SetText(e.note3.status4)
+					if PeggleExtra:IsExtra(e.showID) then
+						e.note3:SetText(PeggleExtra:DuelText("noanswer", e.name2:GetText(), e.showID))
+					else
+						e.note3:SetText(e.note3.status4)
+					end
 					e.decline1:Hide()
 					e.okay1:Show()
 				end
@@ -11178,6 +11267,15 @@ local function k()
 					end
 				end
 			end
+			if h == r[23] then
+				local id, why = PeggleExtra:Resolve(i)
+				if not id then
+					SendAddonMessage(C, r[24] .. "+" .. why, "WHISPER", a)
+					return
+				end
+				i = id
+				h = r[1]
+			end
 			local e = string.lower(a)
 			local l = string.lower(n.name2:GetText())
 			if h == r[1] then
@@ -11305,6 +11403,17 @@ local function k()
 						t.duelStatus = 3
 						n.decline2:Hide()
 						n.okay2:Hide()
+					elseif h == r[24] then
+						if t.duelStatus ~= 3 then
+							m.inviteTimer = nil
+							m.watchError = nil
+							n.note1:SetText(n.note1.caption2)
+							n.note3:SetText(PeggleExtra:DuelText(i, a, n.showID))
+							t.duelStatus = nil
+							n.decline1:Hide()
+							n.okay1:Show()
+							t.duelTimer:Hide()
+						end
 					elseif h == r[5] then
 						m.inviteTimer = nil
 						m.watchError = nil
@@ -11670,7 +11779,7 @@ local function T()
 					d = nil
 					while d == nil do
 						if r then
-							if (((B[o[n]].x - B[o[r]].x) ^ 2) + ((B[o[n]].y - B[o[r]].y) ^ 2)) < s then
+							if (((B[o[n]].x - B[r].x) ^ 2) + ((B[o[n]].y - B[r].y) ^ 2)) < s then
 								if #o > 0 then
 									n = C(1, #o)
 								end
@@ -11678,7 +11787,9 @@ local function T()
 								d = true
 							end
 						else
-							r = n
+							-- Remember the first green peg itself, not its slot in the shrinking list (the 2009 code
+							-- crashed when that slot was the last one, and compared against the wrong peg otherwise).
+							r = o[n]
 							d = true
 						end
 					end

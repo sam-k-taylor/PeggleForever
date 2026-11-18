@@ -4,13 +4,14 @@
 
 PopCap's 2009 World of Warcraft Peggle addon (v1.02), patched to run on WoW Forever (1.60.1, Interface 16001).
 
-The game code is PopCap's original. Almost everything the modern client removed or changed is handled by a compatibility layer, `Compat.lua`. The only edits to `Peggle.lua` are the `setfenv` on its first line, reading its addon path from `PEGGLE_ADDON_PATH`, and passing the now-required flags argument (`""`) to `SetFont`.
+The game code is PopCap's original. Almost everything the modern client removed or changed is handled by a compatibility layer, `Compat.lua`. Edits to `Peggle.lua` are kept small: the `setfenv` on its first line, reading its addon path from `PEGGLE_ADDON_PATH`, passing the now-required flags argument (`""`) to `SetFont`, the fixes listed in `changelog.txt`, and the hooks for level packs (see below).
 
 ## Layout
 
 ```
 PeggleForever.toc Addon manifest (Interface 16001 = WoW Forever 1.60.1)
 Compat.lua        Compatibility layer: maps removed APIs, templates and widget methods onto modern ones
+ExtraLevels.lua   Level pack API (PeggleForever_RegisterLevelPack): saved progress and level-list paging
 Peggle.lua        PopCap's original game code (minified with LuaSrcDiet, reformatted with StyLua)
 stylua.toml       StyLua settings used to format Peggle.lua
 package.sh        Builds the release zip into .release/
@@ -62,6 +63,14 @@ What `Compat.lua` covers:
 - **Addon messages.** Registers the `PEGGLE` prefix, and strips same-realm suffixes from `CHAT_MSG_ADDON` senders and guild roster names so they match the bare names Peggle compares against.
 - **Chat filters.** Secret values handed to chat filters in restricted contexts pass through untouched instead of erroring in Peggle's string handling.
 - **Dropdowns.** Peggle hooks `ToggleDropDownMenu` for every addon's dropdowns. The hook now overlays Peggle's background on Peggle's own menus only, instead of swapping the (now NineSlice) list backdrop.
+
+## Extra levels (level packs)
+
+Other addons can add levels by calling `PeggleForever_RegisterLevelPack` (documented at the top of `ExtraLevels.lua`). [PeggleForever_WoWLevels](../PeggleForever_WoWLevels) is one: the ten levels of PC Peggle World of Warcraft. Once a pack is installed, a drop-down at the top of the level list (Quick Play and Duel) switches between the original levels and each pack.
+
+- Pack levels get ids 13 and up in load order (57 at most). Their best score and completion (played, beaten, all pegs cleared) are saved in `PeggleData.extraLevels` by `"<pack id>:<level key>"`, apart from the checksummed save string that holds levels 1-12 and the talent ranks. They don't award talent points.
+- Pack levels work in duels. The invite names the level by key plus a fingerprint of its data (`dp` message), since level ids depend on load order. The opponent's game replies `dm` if it lacks the pack or has a different version, and the challenger sees why. Older versions ignore `dp`, so the invite times out with a message saying the pack is needed. Duel win/loss counts for pack levels are kept by level key.
+- Battles and Peggle Loot only use levels 1-12.
 
 ## Debugging
 

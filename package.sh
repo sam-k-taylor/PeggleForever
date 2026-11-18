@@ -15,7 +15,7 @@ ZIP="$RELEASE_DIR/$ADDON-$VERSION.zip"
 rm -rf "$STAGE" "$ZIP"
 mkdir -p "$STAGE"
 
-cp Compat.lua Peggle.lua "$STAGE/"
+cp Compat.lua ExtraLevels.lua Peggle.lua "$STAGE/"
 cp -r images sounds Libs "$STAGE/"
 # readme.txt is PopCap's copyright notice and third-party licences; keep it with the code.
 cp readme.txt changelog.txt "$STAGE/"
